@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<style>
+    .button_border {
+        border: 1px solid #68020F;
+        color: #68020F;
+    }
+
+    .button_border:hover {
+        background-color: #68020F;
+        color: white;
+    }
+</style>
+<div class="body-wrapper">
+    <div class="container">
+    <br><br><br><br><br><br><br>
+    <div class="p-3" style="border: 2px solid #68020F; border-radius: 2.5vh; background-color: #FFD6D7;">
+            <div class="card-body">
+                <form class="row g-3">
+                    <div class="col-md-4">
+                        <label for="" class="form-label">Party Name</label>
+                        <div style="display: flex;">
+                            <select name="party" id="" class="form-control">
+                                <option value="">1</option>
+                                <option value="">2</option>
+                            </select>
+                            <div class="btn-group" role="group" aria-label="Third group" style="margin-left: 5px;">
+                                <button type="button" class="btn button_border" data-bs-toggle="modal"
+                                    data-bs-target="#unitmodal" data-bs-whatever="@mdo">
+                                    <span class="fa fa-plus"></span>
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="" class="form-label">Phone Number</label>
+                        <input type="text" class="form-control" id="">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="validationDefaultUsername" class="form-label">Reference Number</label>
+                        <input type="text" class="form-control" id="">
+                    </div>
+                    <div class="modal fade" id="unitmodal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel"
+                                                style="color: #68020F; font-weight: 900;">ADD UNIT</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body mb-1 pb-1">
+                                            <form class="mb-0" id="unitmodal">
+                                                <div class="mb-3">
+                                                    <label for="unit_name" class="col-form-label">UNIT</label>
+                                                    <input type="text" class="form-control _border" id="unit_name"
+                                                        placeholder="Enter Unit" style="border: 2px solid #68020F;"
+                                                        name='unit_name'>
+                                                </div>
+                                                <div class="m-0 text-center">
+                                                    <label for="message-text"
+                                                        class="col-form-label  text-danger fw-lighter">Example :
+                                                        PCS/BOX/LITER</label>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer d-flex justify-content-center mt-1">
+                                            <button type="button" class="btn ps-5 pe-5 button_border"
+                                                data-bs-dismiss="modal">Close</button>
+                                            <button type="button" class="btn ps-5 pe-5 button_border"
+                                                id="unitmodalsubmit">ADD</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                </form>
+            </div>
+        
+    </div>
+    </div>
+</div>
+{% endblock %}
