@@ -10,7 +10,9 @@
     .input_border {
         border: 1px solid #68020F;
     }
-
+    .form-control{
+        border:1px solid #68020F;
+    }
     a {
         text-decoration: none;
     }
@@ -50,6 +52,10 @@
         background-color: #68020F;
         color: white;
     }
+    thead {
+            background-color: #68020F; 
+            color: #fff; 
+        }
 </style>
 <div class="body-wrapper">
     <div class="container">
@@ -60,13 +66,20 @@
                     <div class="col-md-4">
                         <label for="" class="form-label">Party Name</label>
                         <div style="display: flex;">
-                            <select name="party" id="" class="form-control">
-                                <option value="">1</option>
-                                <option value="">2</option>
-                            </select>
+                            <div class="myDropDown">
+                                <select id="party_name" class="form-control" name="party_name">
+                                    <option value="" selected disabled>Select a party name</option>
+                                    {% for party in parties %}
+                                    <option value="{{ party.id }}" data-phone="{{ party.phone }}"
+                                    data-invoice="{{ party.sales_invoice.invoice_number }}"
+                                    data-invoice-date="{{ party.sales_invoice.invoice_date }}">{{ party.party_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                             <div class="btn-group" role="group" aria-label="Third group" style="margin-left: 5px;">
                                 <button type="button" class="btn button_border" data-bs-toggle="modal"
-                                    data-bs-target="#unitmodal" data-bs-whatever="@mdo" onclick="showModal()">
+                                    data-bs-target="#unitmodal" data-bs-whatever="@mdo"
+                                    onclick="showModal(); openDefaultPage();">
                                     <span class="fa fa-plus"></span>
                                 </button>
                             </div>
@@ -75,11 +88,52 @@
                     </div>
                     <div class="col-md-4">
                         <label for="" class="form-label">Phone Number</label>
-                        <input type="text" class="form-control" id="">
+                        <input type="text" class="form-control" id="party_phone" name="party_phone">
                     </div>
                     <div class="col-md-4">
                         <label for="validationDefaultUsername" class="form-label">Reference Number</label>
-                        <input type="text" class="form-control" id="">
+                        <input type="text" class="form-control" id="" name="refnum">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="validationDefaultUsername" class="form-label">Invoice Number</label>
+                        <input type="text" class="form-control" id="invoiceno" name="invoiceno">
+                    </div>
+                    <div class="row">
+                    <div class="col-md-4">
+                        <label for="validationDefaultUsername" class="form-label">Invoice Date</label>
+                        <input type="date" class="form-control" id="invoicedate" name="invoicedate">
+                    </div></div>
+                    <div class="col-md-4">
+                        <label for="validationDefaultUsername" class="form-label">Return Date</label>
+                        <input type="date" class="form-control" id="" name="returndate">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="validationDefaultUsername" class="form-label">Place of Supply</label>
+                        <input type="text" class="form-control" id="" name="placesupply">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="validationDefaultUsername" class="form-label">Payment method</label>
+                        <input type="text" class="form-control" id="" name="paymethod">
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm mt-3" style="text-align: center;">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>PRODUCT</th>
+                                    <th>HSN</th>
+                                    <th>QTY</th>
+                                    <th>PRICE</th>
+                                    <th>TAX</th>
+                                    <th>DISCOUNT</th>
+                                    <th>TOTAL</th>
+                                    <th>FIELD</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr></tr>
+                            </tbody>
+                    
                     </div>
                     <div class="modal fade" id="unitmodal" tabindex="-1" aria-labelledby="exampleModalLabel"
                         aria-hidden="true">
@@ -94,7 +148,7 @@
                                 <div class="container">
                                     <div class="modal-body mb-1 pb-1">
                                         <div class="container-fluid">
-                                            <form id="unitmodal">
+                                            <form id="unitmodalform">
                                                 <div class="form-group row">
                                                     <div class="col-md-4">
                                                         <label for="party_name" class="col-form-label">PARTY
@@ -119,21 +173,22 @@
                                                 </div>
                                                 <ul class="nav nav-pills nav-fill mt-3" id="myTabs">
                                                     <li class="nav-item">
-                                                        <a class="nav-link active" id="transactionTab"
-                                                            data-bs-toggle="tab" href="#transactionForm"
-                                                            onclick="displayTransactionTab()">Transaction</a>
+                                                        <button type="button" class="nav-link active" id="defaultOpen"
+                                                            onclick="openPage('transactionForm')">Transaction</button>
+
                                                     </li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link" id="creditTab" data-bs-toggle="tab"
-                                                            href="#creditForm" onclick="displayCreditForm()">Credit</a>
+                                                        <button type="button" class="nav-link" id="creditTab"
+                                                            onclick="openPage('creditForm')">Credit</button>
+
                                                     </li>
                                                     <li class="nav-item">
-                                                        <a class="nav-link" id="balancesTab" data-bs-toggle="tab"
-                                                            href="#balancesForm"
-                                                            onclick="displayBalancesForm()">Balances</a>
+                                                        <button type="button" class="nav-link" id="balancesTab"
+                                                            onclick="openPage('balancesForm')">Balances</button>
                                                     </li>
                                                 </ul>
-                                                <div id="transactionForm" class="tab-pane fade show active p-5" style="background-color: #ffffff;">
+                                                <div id="transactionForm" class="tab-pane fade show active p-5"
+                                                    style="background-color: #ffffff;">
                                                     <div class="form-group row">
                                                         <div class="col-md-6">
                                                             <label for="trans_no" class="col-form-label">Transaction
@@ -148,8 +203,8 @@
                                                                 placeholder="Enter Party Address"
                                                                 style="border: 2px solid #68020F;" name='pxarty_addr'>
                                                         </div>
-                                                    
-                                                    
+
+
                                                         <div class="col-md-6">
                                                             <label for="email" class="col-form-label">Email</label>
                                                             <input type="email" class="form-control _border" id=""
@@ -158,31 +213,31 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-md-12 d-flex justify-content-start mt-5">
-                                                        
+
                                                         <button type="button" class="btn button_border me-3"
-                                                            data-bs-dismiss="modal" onclick="displayCreditForm()">NEXT</button>
-                                                        
+                                                            data-bs-dismiss="modal"
+                                                            onclick="displayCreditForm()">NEXT</button>
+
                                                     </div>
 
                                                 </div>
 
-                                                <div id="creditForm" class=""
-                                                    style="display: none;margin-top: 3%;">
+                                                <div id="creditForm" class="" style="display: none;margin-top: 3%;">
                                                     <label>Credit Form</label>
 
                                                     <div class="col-md-12 d-flex justify-content-start mt-5">
-                                                        
+
                                                         <button type="button" class="btn button_border me-3"
                                                             data-bs-dismiss="modal">Close</button>
-                                                        <button type="button" class="btn justify-content-end button_border"
+                                                        <button type="button"
+                                                            class="btn justify-content-end button_border"
                                                             id="unitmodalsubmit">ADD</button>
-                                                        
+
                                                     </div>
                                                     hgg
                                                 </div>
 
-                                                <div id="balancesForm" class=""
-                                                    style="display: none;margin-top: 3%;">
+                                                <div id="balancesForm" class="" style="display: none;margin-top: 3%;">
                                                     <label>Balances Form</label>
                                                     vhvv
                                                 </div>
@@ -191,7 +246,7 @@
                                         </div>
                                     </div>
                                 </div>
-                    
+
                             </div>
                         </div>
                     </div>
@@ -203,24 +258,37 @@
     </div>
 </div>
 <script>
-    function displayTransactionTab() {
-        document.getElementById('transactionForm').style.display = 'block';
-        document.getElementById('creditForm').style.display = 'none';
-        document.getElementById('balancesForm').style.display = 'none';
+
+    function openPage(pageName) {
+        var tabcontent, i;
+        tabcontent = document.getElementsByClassName("tab-pane");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        document.getElementById(pageName).style.display = "block"; 
     }
 
-    function displayCreditForm() {
-        document.getElementById('transactionForm').style.display = 'none';
-        document.getElementById('creditForm').style.display = 'block';
-        document.getElementById('balancesForm').style.display = 'none';
-        
-    }
-    function displayBalancesForm() {
-        document.getElementById('transactionForm').style.display = 'none';
-        document.getElementById('creditForm').style.display = 'none';
-        document.getElementById('balancesForm').style.display = 'block';
-    }
     
+    function openDefaultPage() {
+        document.getElementById("defaultOpen").click();
+    }
 
+    document.getElementById('party_name').addEventListener('change', function () {
+        var selectedOption = this.options[this.selectedIndex];
+        
+       
+        var phone = selectedOption.getAttribute('data-phone');
+        document.getElementById('party_phone').value = phone || '';
+        
+       
+        var invoiceno = selectedOption.getAttribute('data-invoice');
+        document.getElementById('invoiceno').value = invoiceno || '';
+        
+       
+        var invoicedate = selectedOption.getAttribute('data-invoice-date');
+        document.getElementById('invoicedate').value = invoicedate || '';
+        
+       
+    });
 </script>
 {% endblock %}

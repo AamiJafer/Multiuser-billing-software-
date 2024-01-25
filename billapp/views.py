@@ -332,4 +332,24 @@ def CreditNote(request):
   return render(request,'CreditNote.html')
 
 def SalesReturn(request):
-  return render(request,'SalesReturn.html')
+  parties=Party.objects.all()
+  party_data = []
+  for party in parties:
+    invoice_data = {
+        'invoice_number': '',
+        'invoice_date': '',
+    }
+    if party.sales_invoice:
+            invoice_data['invoice_number'] = party.sales_invoice.invoice_number
+            invoice_data['invoice_date'] = party.sales_invoice.invoice_date
+
+    party_data.append({
+            'id': party.id,
+            'party_name': party.party_name,
+            'phone': party.phone,
+            'invoice': invoice_data,
+        })
+    context = {
+        'parties': party_data
+    }
+  return render(request,'SalesReturn.html',context)
