@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
-{% block content %}
 {% load static %}
+{% block content %}
+
 <style>
     input {
         background-color: black;
@@ -29,16 +30,6 @@
         font-weight: bold;
     }
 
-    .nav-link:hover {
-        color: rgb(130, 127, 127);
-    }
-
-    .nav-pills .nav-link.active,
-    .nav-pills .show>.nav-link {
-        background-color: #68020F;
-        color: white;
-    }
-
     .tab-pan {
         background-color: rgb(130, 127, 127);
     }
@@ -56,6 +47,11 @@
             background-color: #68020F; 
             color: #fff; 
         }
+
+    .tab-pane{
+        display: none;
+    }
+
 </style>
 <div class="body-wrapper">
     <div class="container">
@@ -63,6 +59,7 @@
         <div class="p-3" style="border: 2px solid #68020F; border-radius: 2.5vh; background-color: #FFD6D7;">
             <div class="card-body">
                 <form class="row g-3">
+                    <div class="row mt-3">
                     <div class="col-md-4">
                         <label for="" class="form-label">Party Name</label>
                         <div style="display: flex;">
@@ -94,15 +91,19 @@
                         <label for="validationDefaultUsername" class="form-label">Reference Number</label>
                         <input type="text" class="form-control" id="" name="refnum">
                     </div>
+                </div>
+                    <div class="row mt-3" style="display: block;">
                     <div class="col-md-4">
                         <label for="validationDefaultUsername" class="form-label">Invoice Number</label>
                         <input type="text" class="form-control" id="invoiceno" name="invoiceno">
                     </div>
-                    <div class="row">
+                    
                     <div class="col-md-4">
                         <label for="validationDefaultUsername" class="form-label">Invoice Date</label>
                         <input type="date" class="form-control" id="invoicedate" name="invoicedate">
-                    </div></div>
+                    </div>
+                </div>
+                    <div class="row mt-3">
                     <div class="col-md-4">
                         <label for="validationDefaultUsername" class="form-label">Return Date</label>
                         <input type="date" class="form-control" id="" name="returndate">
@@ -115,6 +116,7 @@
                         <label for="validationDefaultUsername" class="form-label">Payment method</label>
                         <input type="text" class="form-control" id="" name="paymethod">
                     </div>
+                </div>
                     <div class="table-responsive">
                         <table class="table table-bordered table-sm mt-3" style="text-align: center;">
                             <thead>
@@ -148,7 +150,8 @@
                                 <div class="container">
                                     <div class="modal-body mb-1 pb-1">
                                         <div class="container-fluid">
-                                            <form id="unitmodalform">
+                                            <form id="unitmodalform" action="{% url 'saveParty' %}" method="POST" enctype="multipart/form-data">
+                                                {% csrf_token %}
                                                 <div class="form-group row">
                                                     <div class="col-md-4">
                                                         <label for="party_name" class="col-form-label">PARTY
@@ -159,10 +162,10 @@
                                                     </div>
                                                     <div class="col-md-4">
                                                         <label for="party_address"
-                                                            class="col-form-label">ADDRESS</label>
+                                                            class="col-form-label">GSTIN</label>
                                                         <input type="text" class="form-control _border" id=""
-                                                            placeholder="Enter Party Address"
-                                                            style="border: 2px solid #68020F;" name='party_addr'>
+                                                            placeholder="29APPCK7465F1Z1"
+                                                            style="border: 2px solid #68020F;" name='gst_no'>
                                                     </div>
                                                     <div class="col-md-4">
                                                         <label for="party_name" class="col-form-label">MOBILE</label>
@@ -171,75 +174,146 @@
                                                             style="border: 2px solid #68020F;" name='party_num'>
                                                     </div>
                                                 </div>
+                                                <div class="tabContainer">
                                                 <ul class="nav nav-pills nav-fill mt-3" id="myTabs">
                                                     <li class="nav-item">
-                                                        <button type="button" class="nav-link active" id="defaultOpen"
-                                                            onclick="openPage('transactionForm')">Transaction</button>
+                                                        <button type="button" class="nav-link" id="defaultOpen"
+                                                            onclick="showPanel(0)">GST & ADDRESS</button>
 
                                                     </li>
                                                     <li class="nav-item">
                                                         <button type="button" class="nav-link" id="creditTab"
-                                                            onclick="openPage('creditForm')">Credit</button>
+                                                        onclick="showPanel(1)">CREDIT & BALANCES</button>
 
                                                     </li>
                                                     <li class="nav-item">
                                                         <button type="button" class="nav-link" id="balancesTab"
-                                                            onclick="openPage('balancesForm')">Balances</button>
+                                                        onclick="showPanel(2)">ADDITIONAL FIELD</button>
                                                     </li>
                                                 </ul>
-                                                <div id="transactionForm" class="tab-pane fade show active p-5"
-                                                    style="background-color: #ffffff;">
+                                                <div id="transactionForm" class="tab-pane p-3" style="margin-top: 3%;">
                                                     <div class="form-group row">
                                                         <div class="col-md-6">
-                                                            <label for="trans_no" class="col-form-label">Transaction
-                                                                No.</label>
-                                                            <input type="text" class="form-control _border" id=""
-                                                                placeholder="Enter Transaction Number"
-                                                                style="border: 2px solid #68020F;" name='trans_no'>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <label for="address" class="col-form-label">State</label>
-                                                            <input type="text" class="form-control _border" id=""
-                                                                placeholder="Enter Party Address"
-                                                                style="border: 2px solid #68020F;" name='pxarty_addr'>
-                                                        </div>
+                                                        <div>
+                                                            <label for="state" class="col-form-label">GST Type</label>
 
-
-                                                        <div class="col-md-6">
+                                                            <select class="form-control" name="gsttype" id="gsttype" required>
+                                                                <option selected hidden value="">Select GST Type</option>
+                                                                <option value="Registered Business - Regular"> Registered Business - Regular </option>
+                                                                <option value="Registered Business - Composition"> Registered Business - Composition </option>
+                                                                <option value="unregistered Business"> Unregistered Business </option>
+                                                                <option value="Consumer">Consumer</option>
+                                                                <option value="Overseas">Oversears </option>
+                                                            </select>
+                                                        </div><br>
+                                                        <div>
+                                                            <label for="state" class="col-form-label">Supply State</label>
+                                                            <input type="text" class="form-control _border" id=""
+                                                                placeholder="Enter State"
+                                                                style="border: 2px solid #68020F;" name='supp_state'>
+                                                        </div><br>
+                                                        <div>
                                                             <label for="email" class="col-form-label">Email</label>
                                                             <input type="email" class="form-control _border" id=""
                                                                 placeholder="Enter EmailId"
                                                                 style="border: 2px solid #68020F;" name='email'>
                                                         </div>
-                                                    </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                        <div>
+                                                            <label for="address" class="col-form-label">Billing Address</label>
+                                                            <textarea class="form-control _border" id="" placeholder="Enter Party Address"
+                                                                style="border: 2px solid #68020F;" rows="6" name="party_addr"></textarea>
+                                                        
+
+                                                        </div>
+                                                        </div>
+                                                    </div>    
+                                                       
+                                                           
+                                                      
+                                        
                                                     <div class="col-md-12 d-flex justify-content-start mt-5">
 
-                                                        <button type="button" class="btn button_border me-3"
-                                                            data-bs-dismiss="modal"
-                                                            onclick="displayCreditForm()">NEXT</button>
+                                                        <button type="button" class="btn button_border me-3" onclick="showPanel(1)">NEXT</button>
+
 
                                                     </div>
 
                                                 </div>
 
-                                                <div id="creditForm" class="" style="display: none;margin-top: 3%;">
-                                                    <label>Credit Form</label>
+                                                <div id="creditForm" class="tab-pane p-3" style="margin-top: 3%;">
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <label for="bal" class="col-form-label">Opening Balance</label></div>
+                                                        <div class="col-md-4 mt-2">
+                                                            <input type="radio" name="paymentType" value="toReceive" checked>
+                                                                To Receive
+                                                        </div>
+                                                        <div class="col-md-4 mt-2">
+                                                            <input type="radio" name="paymentType" value="toPay" checked>
+                                                                To Pay
+                                                        </div>
+                                                    </div><br>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            
+                                                            <input type="number" class="form-control _border" id=""
+                                                                placeholder=""
+                                                                style="border: 2px solid #68020F; margin-top: 40px;" name='creditamt'>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label for="creditLimit" class="col-form-label">Credit Limit</label>
+                                                            <input type="number" class="form-control _border" id=""
+                                                                placeholder=""
+                                                                style="border: 2px solid #68020F;" name='crLimit'>
+                                                        </div>
+                                                    </div><br>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <label for="date" class="col-form-label">Date</label>
+                                                            <input type="date" class="form-control _border" id=""
+                                                                placeholder=""
+                                                                style="border: 2px solid #68020F;" name='credit_date'>
+                                                        </div>
+                                                    </div><br>
+                                                    <div class="col-md-12 d-flex justify-content-start mt-3">
 
-                                                    <div class="col-md-12 d-flex justify-content-start mt-5">
-
-                                                        <button type="button" class="btn button_border me-3"
-                                                            data-bs-dismiss="modal">Close</button>
-                                                        <button type="button"
-                                                            class="btn justify-content-end button_border"
-                                                            id="unitmodalsubmit">ADD</button>
+                                                        <button type="button" class="btn button_border me-3" onclick="showPanel(0)">PREVIOUS</button>
+                                                        <button type="button" class="btn button_border me-3" onclick="showPanel(2)">NEXT</button>
 
                                                     </div>
-                                                    hgg
                                                 </div>
 
-                                                <div id="balancesForm" class="" style="display: none;margin-top: 3%;">
-                                                    <label>Balances Form</label>
-                                                    vhvv
+                                                <div id="balancesForm" class="tab-pane p-3" style="margin-top: 3%;">
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <label for="add1" class="col-form-label">Additional Field1</label>
+                                                            <input type="text" class="form-control _border" id=""
+                                                                placeholder=""
+                                                                style="border: 2px solid #68020F;" name='addField1'>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="add2" class="col-form-label">Additional Field2</label>
+                                                            <input type="text" class="form-control _border" id=""
+                                                                placeholder=""
+                                                                style="border: 2px solid #68020F;" name='addField2'>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label for="add3" class="col-form-label">Additional Field3</label>
+                                                            <input type="text" class="form-control _border" id=""
+                                                                placeholder=""
+                                                                style="border: 2px solid #68020F;" name='addField3'>
+                                                        </div>
+                                                        <div class="col-md-12 d-flex justify-content-start mt-5">
+
+                                                            <button type="button" class="btn button_border me-3" onclick="showPanel(1)">PREVIOUS</button>
+                                                            <button type="submit" class="btn button_border me-3">SAVE</button>
+    
+                                                        </div>
+
+                                                    </div>
+                                                </div>
                                                 </div>
                                             </form>
 
@@ -259,36 +333,62 @@
 </div>
 <script>
 
-    function openPage(pageName) {
-        var tabcontent, i;
-        tabcontent = document.getElementsByClassName("tab-pane");
-        for (i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].style.display = "none";
-        }
-        document.getElementById(pageName).style.display = "block"; 
+    // function openPage(pageName) {
+    //     var tabcontent, i;
+    //     tabcontent = document.getElementsByClassName("tab-pane");
+    //     for (i = 0; i < tabcontent.length; i++) {
+    //         tabcontent[i].style.display = "none";
+    //     }
+    //     document.getElementById(pageName).style.display = "block"; 
+    // }
+
+    var tabButtons=document.querySelectorAll(".tabContainer .nav .nav-item button");
+    var tabPanels=document.querySelectorAll(".tabContainer .tab-pane");
+
+    function showPanel(panelIndex){
+        tabButtons.forEach(function(node){
+            node.style.backgroundColor="";
+            node.style.color="";
+        });
+        tabButtons[panelIndex].style.backgroundColor= "#68020F";
+        tabButtons[panelIndex].style.color= "white";
+        tabPanels.forEach(function(node){
+            node.style.display="none";
+        });
+        tabPanels[panelIndex].style.display="block";
     }
+    showPanel(0);
+
+
+
+
+
+
+
+
+
 
     
-    function openDefaultPage() {
-        document.getElementById("defaultOpen").click();
-    }
+    // function openDefaultPage() {
+    //     document.getElementById("defaultOpen").click();
+    // }
 
-    document.getElementById('party_name').addEventListener('change', function () {
-        var selectedOption = this.options[this.selectedIndex];
+    // document.getElementById('party_name').addEventListener('change', function () {
+    //     var selectedOption = this.options[this.selectedIndex];
         
        
-        var phone = selectedOption.getAttribute('data-phone');
-        document.getElementById('party_phone').value = phone || '';
+    //     var phone = selectedOption.getAttribute('data-phone');
+    //     document.getElementById('party_phone').value = phone || '';
         
        
-        var invoiceno = selectedOption.getAttribute('data-invoice');
-        document.getElementById('invoiceno').value = invoiceno || '';
+    //     var invoiceno = selectedOption.getAttribute('data-invoice');
+    //     document.getElementById('invoiceno').value = invoiceno || '';
         
        
-        var invoicedate = selectedOption.getAttribute('data-invoice-date');
-        document.getElementById('invoicedate').value = invoicedate || '';
+    //     var invoicedate = selectedOption.getAttribute('data-invoice-date');
+    //     document.getElementById('invoicedate').value = invoicedate || '';
         
        
-    });
+    // });
 </script>
 {% endblock %}

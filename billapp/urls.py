@@ -29,6 +29,7 @@ urlpatterns = [
     path('accept_staff/<int:id>',views.accept_staff,name='accept_staff'),  
     path('reject_staff/<int:id>',views.reject_staff,name='reject_staff'),  
     path('CreditNote/',views.CreditNote,name="CreditNote"),
-    path('SalesReturn/',views.SalesReturn,name="SalesReturn")
+    path('SalesReturn/',views.SalesReturn,name="SalesReturn"),
+    path('saveParty/',views.saveParty,name="saveParty")
 
 ]

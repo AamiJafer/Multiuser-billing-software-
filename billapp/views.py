@@ -328,6 +328,40 @@ def reject_staff(request,id):
   messages.info(request,'Employee Deleted !!')
   return redirect('load_staff_request')
 
+def saveParty(request):
+  if request.method=="POST":
+    party_name=request.POST['party_name']
+    gst_no=request.POST['gst_no']
+    mob=request.POST['party_num']
+    gsttype = request.POST['gsttype']
+    state = request.POST['supp_state']
+    email = request.POST['email']
+    addr=request.POST['party_addr']
+    opbal=request.POST['creditamt']
+    cr_limit=request.POST['crLimit']
+    date=request.POST['credit_date']
+    add1=request.POST['addField1']
+    add2=request.POST['addField2']
+    add3=request.POST['addField3']
+    Party.objects.create(
+            party_name=party_name,
+            company__gst_no=gst_no, 
+            contact=mob,
+            company__gst_type=gsttype,
+            state=state,
+            email=email,
+            address=addr,
+            openingbalance=opbal,
+            creditlimit=cr_limit,
+            current_date=date,
+            additionalfield1=add1,
+            additionalfield2=add2,
+            additionalfield3=add3
+        )
+    return redirect('SalesReturn')
+    
+
+
 def CreditNote(request):
   return render(request,'CreditNote.html')
 
@@ -349,7 +383,7 @@ def SalesReturn(request):
             'phone': party.phone,
             'invoice': invoice_data,
         })
-    context = {
-        'parties': party_data
+  context = {
+        'parties': party_data,
     }
   return render(request,'SalesReturn.html',context)
