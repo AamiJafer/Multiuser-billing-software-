@@ -1,11 +1,5 @@
 {% extends 'base.html' %}
 {% load static %}
-
-{% block head %}
-  {{ block.super }}
-  
-{% endblock %}
-
 {% block content %}
 <style>
     input {
@@ -337,11 +331,6 @@
 
 <script>
 
-$(document).ready(function(){
-        $('#party_name').select2();
-    });
-
-
 
     var tabButtons=document.querySelectorAll(".tabContainer .nav .nav-item button");
     var tabPanels=document.querySelectorAll(".tabContainer .tab-pane");
@@ -359,6 +348,11 @@ $(document).ready(function(){
         tabPanels[panelIndex].style.display="block";
     }
     showPanel(0);
+
+
+    $(document).ready(function(){
+        $('#party_name').select2();
+    });
 
 
 
