@@ -334,8 +334,14 @@ def CreditNote(request):
   return render(request,'CreditNote.html',{'usr':usr})
 
 def SalesReturn(request):
-  parties=Party.objects.all()
-  return render(request,'SalesReturn.html',{'parties':parties})
+  if request.user.is_company:
+      cmp = request.user.company
+  else:
+      cmp = request.user.employee.company      
+  parties = Party.objects.filter(company=cmp)
+  items = Item.objects.filter(company=cmp)
+  context = {'usr':request.user, 'parties':parties, 'items':items}
+  return render(request,'SalesReturn.html',context)
 
 def saveParty(request):
     if request.user.is_authenticated:

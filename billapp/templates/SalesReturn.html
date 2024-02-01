@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+
 {% load static %}
 {% block content %}
 <style>
@@ -50,6 +51,25 @@
     .tab-pane{
         display: none;
     }
+    .myDropDown{
+        flex: 1;
+    }
+    .select2-container--default .select2-selection--single {
+
+        height: 39px;
+        border: 1px solid #68020F;  /* Add border style */
+        background-color: #FFD6D7;
+        color: white;  /* Add text color */
+        display: flex; /* Use Flexbox */
+        align-items: center; /* Align vertically in the center */
+        padding: 0 2px;
+        
+    }
+  
+    .select2-container--default .select2-search--dropdown .select2-search__field {
+    color:black;
+    background-color: white;
+}
 
 </style>
 <div class="body-wrapper">
@@ -64,17 +84,20 @@
                             <label for="" class="form-label">Party Name</label>
                             <div style="display: flex;">
                                 <div class="myDropDown">
-                                    <select id="party_name" class="form-control" name="party_name">
-                                    
+                                    <select id="party_name" class="form-control" name="party_name">      
                                         <option value="" selected disabled>Select a party name</option>
-                                        <option value=""></option>
                                         {% for party in parties %}
-                                        <option value="{{ party.id }}">{{ party.party_name }}</option>
-                                        {% endfor %}
-                                
+                                        <option value="{{ party.id }}" 
+                                        data-phone="{{ party.contact }}" 
+                                        data-refnum="{{ party.refnum }}"
+                                        data-invoiceno="{{ party.salesinvoice.invoice_no }}"
+                                        data-invoicedate="{{ party.salesinvoice.date|date:'Y-m-d' }}"
+                                        data-balance="{{party.openingbalance}}"
+                                        data-placesupply="{{ party.placesupply }}"
+                                        data-paymethod="{{ party.payment }}">{{ party.party_name }}</option>
+                                        {% endfor %}            
                                     </select>
-
-                                    </div>
+                                </div>
                                 <div class="btn-group" role="group" aria-label="Third group" style="margin-left: 5px;">
                                     <button type="button" class="btn button_border" data-bs-toggle="modal"
                                         data-bs-target="#unitmodal" data-bs-whatever="@mdo"
@@ -82,12 +105,14 @@
                                         <span class="fa fa-plus"></span>
                                     </button>
                                 </div>
-
+                                
                             </div>
+                            <span id="balance">Available Balance:</span>
                         </div>
                         <div class="col-md-4">
                             <label for="" class="form-label">Phone Number</label>
                             <input type="text" class="form-control" id="party_phone" name="party_phone">
+                            
                         </div>
                         <div class="col-md-4">
                             <label for="validationDefaultUsername" class="form-label">Reference Number</label>
@@ -108,7 +133,7 @@
                     <div class="row mt-3">
                         <div class="col-md-4">
                             <label for="validationDefaultUsername" class="form-label">Return Date</label>
-                            <input type="date" class="form-control" id="" name="returndate">
+                            <input type="date" class="form-control" id="returndate" name="returndate" value="{% now 'Y-m-d' %}">
                         </div>
                         <div class="col-md-4">
                             <label for="validationDefaultUsername" class="form-label">Place of Supply</label>
@@ -135,9 +160,41 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr></tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>
+                                        <div style="display: flex;">
+                                            <div class="myDropDown">
+                                                <select id="item_name" class="form-control" name="item_name">      
+                                                    <option value="" selected disabled>Select Item</option>
+                                                    {% for item in items %}
+                                                    <option value="{{ item.id }}" 
+                                                    data-hsn="{{ item.itm_hsn }}" 
+                                                    data-qty="{{ item.itm_unit }}"
+                                                    data-price="{{ item.itm_sale_price }}"
+                                                    data-tax="{{ item.itm_vat }}">{{ item.itm_name }}</option>
+                                                    {% endfor %}            
+                                                </select>
+                                            </div>
+                                            <div class="btn-group" role="group" aria-label="Third group" style="margin-left: 5px;">
+                                                <button type="button" class="btn button_border" data-bs-toggle="modal"
+                                                    data-bs-target="#unitmodal" data-bs-whatever="@mdo"
+                                                    >
+                                                    <span class="fa fa-plus"></span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><input type="text" class="form-control" id="hsn" name="hsn"></td>
+                                    <td><input type="number" class="form-control" id="qty" name="qty"></td>
+                                    <td><input type="text" class="form-control" id="price" name="price"></td>
+                                    <td><input type="text" class="form-control" id="tax" name="tax"></td>
+                                    <td><input type="number" class="form-control" id="discount" name="discount" value="0"></td>
+                                    <td><input type="text" class="form-control" id="total" name="total"></td>
+                                </tr>
+                                
                             </tbody>
-                    
+                        </table>
                     </div>
                 </form>
                 <div class="modal fade" id="unitmodal" tabindex="-1" aria-labelledby="exampleModalLabel"
@@ -330,6 +387,50 @@
 </div>
 
 <script>
+    $(document).ready(function () {
+  
+        $('#party_name').select2();
+
+
+        $('#balance').hide();
+
+        // Add event listener to party name dropdown
+        $('#party_name').on('change', function () {
+            var selectedParty = $(this).find(':selected');
+
+            console.log('Selected Party Data:', selectedParty.data());
+
+            if (selectedParty.length) {
+           
+                $('#balance').text('Available Balance: ' + selectedParty.data('balance')).show();
+
+                $('#party_phone').val(selectedParty.data('phone'));
+               
+                $('#invoiceno').val(selectedParty.data('invoiceno'));
+                $('#invoicedate').val(selectedParty.data('invoicedate'));
+                $('#balance').val(selectedParty.data('balance'));
+                // $('input[name="placesupply"]').val(selectedParty.data('placesupply'));
+                $('input[name="paymethod"]').val(selectedParty.data('paymethod'));
+                var referenceNumber = calculateReferenceNumber(selectedParty.data('refnum'));
+                $('input[name="refnum"]').val(referenceNumber);
+            }
+            else{
+                $('#balance').hide();
+            }
+        });
+
+        function calculateReferenceNumber(previousRefNum) {
+            if (!previousRefNum) {
+                return 1;
+            }
+
+            var nextRefNum = parseInt(previousRefNum) + 1;
+
+            return nextRefNum;
+        }
+ 
+
+    });
 
 
     var tabButtons=document.querySelectorAll(".tabContainer .nav .nav-item button");
@@ -350,20 +451,10 @@
     showPanel(0);
 
 
-    $(document).ready(function(){
-        $('#party_name').select2();
-    });
-
-
-
     $('#unitmodal').on('show.bs.modal', function (event) {
         console.log('Modal is about to be shown');
     });
 
-
     
-
- 
- 
 </script>
 {% endblock %}
