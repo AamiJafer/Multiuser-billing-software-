@@ -30,6 +30,6 @@ urlpatterns = [
     path('reject_staff/<int:id>',views.reject_staff,name='reject_staff'),  
     path('CreditNote/',views.CreditNote,name="CreditNote"),
     path('SalesReturn/',views.SalesReturn,name="SalesReturn"),
-    path('saveParty/',views.saveParty,name="saveParty")
+    path('saveParty',views.saveParty,name="saveParty")
 
 ]

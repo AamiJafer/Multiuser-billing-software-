@@ -114,6 +114,7 @@ class SalesInvoice(models.Model):
 
 class CreditNote(models.Model):
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,null=True,blank=True)
+    company = models.ForeignKey(Company,on_delete= models.CASCADE,null=True,blank=True)
     party = models.OneToOneField(Party,on_delete=models.CASCADE,null=True,blank=True)
     salesinvoice=models.ForeignKey(SalesInvoice,on_delete=models.CASCADE,null=True,blank=True)
     item=models.ForeignKey(ItemTransactions,on_delete=models.CASCADE,null=True,blank=True)
