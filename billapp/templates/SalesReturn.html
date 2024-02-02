@@ -69,7 +69,13 @@
     .select2-container--default .select2-search--dropdown .select2-search__field {
     color:black;
     background-color: white;
-}
+    }
+
+    .small-input{
+        width: 90px;
+        margin-left: 8px;
+    }
+    
 
 </style>
 <div class="body-wrapper">
@@ -161,8 +167,8 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>1</td>
-                                    <td>
+                                    <td class="p-3">1</td>
+                                    <td class="p-3">
                                         <div style="display: flex;">
                                             <div class="myDropDown">
                                                 <select id="item_name" class="form-control" name="item_name">      
@@ -185,17 +191,26 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td><input type="text" class="form-control" id="hsn" name="hsn"></td>
-                                    <td><input type="number" class="form-control" id="qty" name="qty"></td>
-                                    <td><input type="text" class="form-control" id="price" name="price"></td>
-                                    <td><input type="text" class="form-control" id="tax" name="tax"></td>
-                                    <td><input type="number" class="form-control" id="discount" name="discount" value="0"></td>
-                                    <td><input type="text" class="form-control" id="total" name="total"></td>
+                                    <td class="p-3"><input type="text" class="form-control small-input" id="hsn" name="hsn"></td>
+                                    <td class="p-3"><input type="number" class="form-control small-input" id="qty" name="qty"></td>
+                                    <td class="p-3"><input type="text" class="form-control small-input" id="price" name="price"></td>
+                                    <td class="p-3"><input type="text" class="form-control small-input" id="tax" name="tax"></td>
+                                    <td class="p-3"><input type="number" class="form-control small-input" id="discount" name="discount" value="0"></td>
+                                    <td class="p-3"><input type="text" class="form-control small-input" id="total" name="total"></td>
+                                    <td class="p-3"><button type="button" class="btn button_border delete-row-button">
+                                        <span class="fa fa-minus"></span>
+                                    </button></td>
                                 </tr>
                                 
                             </tbody>
                         </table>
+                        <div class="col-md-4">
+                            <button type="button" class="btn button_border add-row-button" data-bs-whatever="@mdo">
+                                <span class="fa fa-plus"></span>
+                            </button>
+                        </div>
                     </div>
+                    
                 </form>
                 <div class="modal fade" id="unitmodal" tabindex="-1" aria-labelledby="exampleModalLabel"
                         aria-hidden="true">
@@ -388,33 +403,22 @@
 
 <script>
     $(document).ready(function () {
-  
         $('#party_name').select2();
-
-
         $('#balance').hide();
 
-        // Add event listener to party name dropdown
         $('#party_name').on('change', function () {
             var selectedParty = $(this).find(':selected');
 
-            console.log('Selected Party Data:', selectedParty.data());
-
             if (selectedParty.length) {
-           
                 $('#balance').text('Available Balance: ' + selectedParty.data('balance')).show();
-
                 $('#party_phone').val(selectedParty.data('phone'));
-               
                 $('#invoiceno').val(selectedParty.data('invoiceno'));
                 $('#invoicedate').val(selectedParty.data('invoicedate'));
                 $('#balance').val(selectedParty.data('balance'));
-                // $('input[name="placesupply"]').val(selectedParty.data('placesupply'));
                 $('input[name="paymethod"]').val(selectedParty.data('paymethod'));
                 var referenceNumber = calculateReferenceNumber(selectedParty.data('refnum'));
                 $('input[name="refnum"]').val(referenceNumber);
-            }
-            else{
+            } else {
                 $('#balance').hide();
             }
         });
@@ -425,36 +429,88 @@
             }
 
             var nextRefNum = parseInt(previousRefNum) + 1;
-
             return nextRefNum;
         }
- 
 
-    });
+        var serialNumber = 1;
 
+        function addNewRow() {
+            serialNumber++;
 
-    var tabButtons=document.querySelectorAll(".tabContainer .nav .nav-item button");
-    var tabPanels=document.querySelectorAll(".tabContainer .tab-pane");
+            var tbody = document.querySelector('.table tbody');
 
-    function showPanel(panelIndex){
-        tabButtons.forEach(function(node){
-            node.style.backgroundColor="";
-            node.style.color="";
+            var newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td class="p-3">${serialNumber}</td>
+                <td class="p-3">
+                    <div style="display: flex;">
+                        <div class="myDropDown">
+                            <select id="item_name_${serialNumber}" class="form-control" name="item_name">
+                                <option value="" selected disabled>Select Item</option>
+                                {% for item in items %}
+                                    <option value="${item.id}" 
+                                        data-hsn="${item.itm_hsn}" 
+                                        data-qty="${item.itm_unit}"
+                                        data-price="${item.itm_sale_price}"
+                                        data-tax="${item.itm_vat}">${item.itm_name}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="Third group" style="margin-left: 5px;">
+                            <button type="button" class="btn button_border" data-bs-toggle="modal" data-bs-target="#unitmodal" data-bs-whatever="@mdo">
+                                <span class="fa fa-plus"></span>
+                            </button>
+                        </div>
+                    </div>
+                </td>
+                <td class="p-3"><input type="text" class="form-control small-input" id="hsn_${serialNumber}" name="hsn"></td>
+                <td class="p-3"><input type="number" class="form-control small-input" id="qty_${serialNumber}" name="qty"></td>
+                <td class="p-3"><input type="text" class="form-control small-input" id="price_${serialNumber}" name="price"></td>
+                <td class="p-3"><input type="text" class="form-control small-input" id="tax_${serialNumber}" name="tax"></td>
+                <td class="p-3"><input type="number" class="form-control small-input" id="discount_${serialNumber}" name="discount" value="0"></td>
+                <td class="p-3"><input type="text" class="form-control small-input" id="total_${serialNumber}" name="total"></td>
+                <td class="p-3"><button type="button" class="btn button_border" data-bs-toggle="modal" data-bs-target="#unitmodal" data-bs-whatever="@mdo">
+                    <span class="fa fa-minus"></span>
+                </button></td>
+            `;
+
+            tbody.appendChild(newRow);
+        }
+
+        var addRowButton = document.querySelector('.add-row-button');
+        addRowButton.addEventListener('click', function () {
+            addNewRow();
         });
-        tabButtons[panelIndex].style.backgroundColor= "#68020F";
-        tabButtons[panelIndex].style.color= "white";
-        tabPanels.forEach(function(node){
-            node.style.display="none";
+        document.addEventListener('click', function (event) {
+            if (event.target.classList.contains('delete-row-button')) {
+                // Get the parent row and remove it
+                var row = event.target.closest('tr');
+                if (row) {
+                    row.remove();
+                }
+            }
         });
-        tabPanels[panelIndex].style.display="block";
-    }
-    showPanel(0);
 
+        var tabButtons = document.querySelectorAll(".tabContainer .nav .nav-item button");
+        var tabPanels = document.querySelectorAll(".tabContainer .tab-pane");
 
-    $('#unitmodal').on('show.bs.modal', function (event) {
-        console.log('Modal is about to be shown');
+        function showPanel(panelIndex) {
+            tabButtons.forEach(function (node) {
+                node.style.backgroundColor = "";
+                node.style.color = "";
+            });
+            tabButtons[panelIndex].style.backgroundColor = "#68020F";
+            tabButtons[panelIndex].style.color = "white";
+            tabPanels.forEach(function (node) {
+                node.style.display = "none";
+            });
+            tabPanels[panelIndex].style.display = "block";
+        }
+        showPanel(0);
+
+        $('#unitmodal').on('show.bs.modal', function (event) {
+            console.log('Modal is about to be shown');
+        });
     });
-
-    
 </script>
 {% endblock %}
