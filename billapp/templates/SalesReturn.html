@@ -51,6 +51,11 @@
     .tab-pane{
         display: none;
     }
+
+    .tabContainer .tab-pane{
+        display: none;
+    }
+
     .myDropDown{
         flex: 1;
     }
@@ -81,7 +86,7 @@
 <div class="body-wrapper">
     <div class="container">
         <br><br><br><br><br><br><br>
-        <div class="p-3" style="border: 2px solid #68020F; border-radius: 2.5vh; background-color: #FFD6D7;">
+        <div class="p-3 mb-5" style="border: 2px solid #68020F; border-radius: 2.5vh; background-color: #FFD6D7;">
             <div class="card-body">
                 <form class="row g-3" method="post">
                     {% csrf_token %}
@@ -105,8 +110,8 @@
                                     </select>
                                 </div>
                                 <div class="btn-group" role="group" aria-label="Third group" style="margin-left: 5px;">
-                                    <button type="button" class="btn button_border" data-bs-toggle="modal"
-                                        data-bs-target="#unitmodal" data-bs-whatever="@mdo"
+                                    <button type="button" class="btn button_border" id="unitmodalBtn" data-bs-toggle="modal"
+                                        data-bs-target="#unitModal" data-bs-whatever="@mdo"
                                         >
                                         <span class="fa fa-plus"></span>
                                     </button>
@@ -183,9 +188,8 @@
                                                 </select>
                                             </div>
                                             <div class="btn-group" role="group" aria-label="Third group" style="margin-left: 5px;">
-                                                <button type="button" class="btn button_border" data-bs-toggle="modal"
-                                                    data-bs-target="#unitmodal" data-bs-whatever="@mdo"
-                                                    >
+                                                <button type="button" class="btn button_border" id="itmodalBtn" data-bs-toggle="modal"
+                                                    data-bs-target="#itModal" data-bs-whatever="@mdo">
                                                     <span class="fa fa-plus"></span>
                                                 </button>
                                             </div>
@@ -205,52 +209,51 @@
                             </tbody>
                         </table>
                         <div class="col-md-4">
-                            <button type="button" class="btn button_border add-row-button" data-bs-whatever="@mdo">
-                                <span class="fa fa-plus"></span>
-                            </button>
+                            <button type="button" class="btn button_border add-row-button">
+                                        <span class="fa fa-plus"></span>
+                                    </button>
                         </div>
                     </div>
                     
                 </form>
-                <div class="modal fade" id="unitmodal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                        aria-hidden="true">
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="exampleModalLabel"
-                                        style="color: #68020F; font-weight: 900;">ADD PARTY</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="container">
-                                    <div class="modal-body mb-1 pb-1">
-                                        <div class="container-fluid">
-                                            <form id="unitmodalform" action="{% url 'saveParty' %}" method="post" enctype="multipart/form-data">
-                                                {% csrf_token %}
-                                                <div class="form-group row">
-                                                    <div class="col-md-4">
+                <div class="modal fade" id="unitModal" tabindex="-1" aria-labelledby="exampleModalLabel"aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel"
+                                    style="color: #68020F; font-weight: 900;">ADD PARTY</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="container">
+                                <div class="modal-body mb-1 pb-1">
+                                    <div class="container-fluid">
+                                        <form id="unitmodalform" action="{% url 'saveParty' %}" method="post" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <div class="form-group row">
+                                                <div class="col-md-4">
                                                         <label for="party_name" class="col-form-label">PARTY
                                                             NAME</label>
                                                         <input type="text" class="form-control _border" id=""
                                                             placeholder="Enter Party Name"
                                                             style="border: 2px solid #68020F;" name='party_name'>
-                                                    </div>
-                                                    <div class="col-md-4">
+                                                </div>
+                                                <div class="col-md-4">
                                                         <label for="party_address"
                                                             class="col-form-label">GSTIN</label>
                                                         <input type="text" class="form-control _border" id=""
                                                             placeholder="29APPCK7465F1Z1"
                                                             style="border: 2px solid #68020F;" name='gst_no'>
-                                                    </div>
-                                                    <div class="col-md-4">
+                                                </div>
+                                                <div class="col-md-4">
                                                         <label for="party_name" class="col-form-label">MOBILE</label>
                                                         <input type="text" class="form-control _border" id=""
                                                             placeholder="Enter Mobile Number"
                                                             style="border: 2px solid #68020F;" name='party_num'>
-                                                    </div>
                                                 </div>
-                                                <div class="tabContainer">
-                                                    <ul class="nav nav-pills nav-fill mt-3" id="myTabs">
+                                            </div>
+                                            <div class="tabContainer">
+                                                <ul class="nav nav-pills nav-fill mt-3" id="myTabs">
                                                         <li class="nav-item">
                                                             <button type="button" class="nav-link" id="defaultOpen"
                                                                 onclick="showPanel(0)">GST & ADDRESS</button>
@@ -265,7 +268,7 @@
                                                             <button type="button" class="nav-link" id="balancesTab"
                                                             onclick="showPanel(2)">ADDITIONAL FIELD</button>
                                                         </li>
-                                                    </ul>
+                                                </ul>
                                                 <div id="transactionForm" class="tab-pane p-3" style="margin-top: 3%;">
                                                     <div class="form-group row">
                                                         <div class="col-md-6">
@@ -386,14 +389,157 @@
 
                                                     </div>
                                                 </div>
-                                            </form>
-                                        </div>
+                                            </div>
+                                        </form>
                                     </div>
+                                    
                                 </div>
-
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div class="modal fade" id="itModal" tabindex="-1" aria-labelledby="exampleModalLabel2"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel"
+                                    style="color: #68020F; font-weight: 900;">ADD ITEM</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="container">
+                                <div class="modal-body mb-1 pb-1">
+                                    <div class="container-fluid">
+                                        <form id="itmodalform" action="" method="post" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <div class="form-group row">
+                                                <div class="col-md-3">
+                                                    <label for="party_name" class="col-form-label">ITEM TYPE</label>
+                                                    <select id="item_type" class="form-control" name="item_type">      
+                                                        <option value="" selected disabled>Select Item</option>
+                                                        <option value="Goods">Goods</option>
+                                                        <option value="Service">Service</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3">
+                                                        <label for="item_name"
+                                                            class="col-form-label">ITEM NAME</label>
+                                                        <input type="text" class="form-control" id="" name='item_name'>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label for="item_hsn" class="col-form-label">ITEM HSN</label>
+                                                    <input type="number" class="form-control" id="" name='item_hsn'>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label for="item_unit" class="col-form-label">Item Unit</label>
+                                                    <input type="text" class="form-control _border" id="" name='item_unit'>
+                                                </div>
+                                            </div>
+                                            <div class="tabContainer2">
+                                                <ul class="nav nav-pills nav-fill mt-3" id="myTabs2">
+                                                        <li class="nav-item">
+                                                            <button type="button" class="nav-link" id="defaultOpen2"
+                                                                onclick="showPanel2(0)">PRICING</button>
+
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <button type="button" class="nav-link" id="stockTab"
+                                                            onclick="showPanel2(1)">STOCKS</button>
+
+                                                        </li>
+                                            
+                                                </ul>
+                                                <div id="pricingForm" class="tab-pane p-3" style="margin-top: 3%;">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-6" style="display: flex;">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="radio" name="taxStatus" id="taxableRadio" value="taxable" checked>
+                                                                <label class="form-check-label" for="taxableRadio">
+                                                                    Taxable
+                                                                </label>
+                                                            </div>
+                                                            <div class="form-check" style="margin-left: 30px;">
+                                                                <input class="form-check-input" type="radio" name="taxStatus" id="exemptedRadio" value="exempted">
+                                                                <label class="form-check-label" for="exemptedRadio">
+                                                                    Tax Exempted
+                                                                </label>
+                                                            </div>
+                                                        </div><br>  
+                                                    </div>
+                                                    <div class="form-group row mt-3"> 
+                                                        <div class="col-md-6">                                                                                                                  
+                                                            <label for="vat" class="col-form-label">VAT</label>
+                                                                <select class="form-control" name="vat" id="vat" required>
+                                                                    <option selected hidden value="">Select</option>
+                                                                    <option value="vat0"> VAT0[0%] </option>
+                                                                    <option value="vat5"> VAT5[5%] </option>
+                                                                </select>
+                                                        </div><br>
+                                                    </div>
+                                                    <div class="form-group row mt-3">    
+                                                        <div class="col-md-6">
+                                                            <div>
+                                                                <label for="saleprice" class="col-form-label">SALES PRICE</label>
+                                                                <input type="number" class="form-control" id="" name='item_slprice'>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div>
+                                                                <label for="purchase" class="col-form-label">PURCHASE PRICE</label>
+                                                                <input type="number" class="form-control" id="" name='item_prprice'>
+                                                            </div>
+                                                        </div>
+                                                    </div>    
+                                        
+                                                    <div class="col-md-12 d-flex justify-content-start mt-5">
+                                                        <button type="button" class="btn button_border me-3" onclick="showPanel2(1)">NEXT</button>
+                                                    </div>
+                                                </div>
+
+                                                <div id="stockForm" class="tab-pane p-3" style="margin-top: 3%;">
+                                                    <div class="form-group row">    
+                                                        <div class="col-md-6">
+                                                            <div>
+                                                                <label for="opstock" class="col-form-label">OPENING STOCK</label>
+                                                                <input type="number" class="form-control" id="" name='item_opstock'>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div>
+                                                                <label for="atprice" class="col-form-label">AT PRICE</label>
+                                                                <input type="number" class="form-control" id="" name='item_atprice'>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row mt-3">    
+                                                        <div class="col-md-6">
+                                                            <div>
+                                                                <label for="stdate" class="col-form-label">DATE</label>
+                                                                <input type="date" class="form-control" id="" name='item_stdate' value="{% now 'Y-m-d' %}">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12 d-flex justify-content-start mt-5">
+
+                                                        <button type="button" class="btn button_border me-3" onclick="showPanel2(0)">PREVIOUS</button>
+                                                        <button type="submit" class="btn button_border me-3">SAVE</button>
+
+                                                    </div>
+                                                </div>
+
+                                            
+                                            </div>
+                                        </form>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>        
+                </div>
+
 
             </div>
 
@@ -403,22 +549,31 @@
 
 <script>
     $(document).ready(function () {
+  
         $('#party_name').select2();
         $('#balance').hide();
 
+        // Add event listener to party name dropdown
         $('#party_name').on('change', function () {
             var selectedParty = $(this).find(':selected');
 
+            console.log('Selected Party Data:', selectedParty.data());
+
             if (selectedParty.length) {
+           
                 $('#balance').text('Available Balance: ' + selectedParty.data('balance')).show();
+
                 $('#party_phone').val(selectedParty.data('phone'));
+               
                 $('#invoiceno').val(selectedParty.data('invoiceno'));
                 $('#invoicedate').val(selectedParty.data('invoicedate'));
                 $('#balance').val(selectedParty.data('balance'));
+                // $('input[name="placesupply"]').val(selectedParty.data('placesupply'));
                 $('input[name="paymethod"]').val(selectedParty.data('paymethod'));
                 var referenceNumber = calculateReferenceNumber(selectedParty.data('refnum'));
                 $('input[name="refnum"]').val(referenceNumber);
-            } else {
+            }
+            else{
                 $('#balance').hide();
             }
         });
@@ -429,8 +584,27 @@
             }
 
             var nextRefNum = parseInt(previousRefNum) + 1;
+
             return nextRefNum;
         }
+
+        document.addEventListener('click', function (event) {
+            var deleteButtons = document.querySelectorAll('.delete-row-button');
+            deleteButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var row = button.closest('tr');
+                    if (row) {
+                        row.remove();
+                    }
+                });
+            });
+        });
+
+
+        var addRowButton = document.querySelector('.add-row-button');
+        addRowButton.addEventListener('click', function () {
+            addNewRow();
+        });
 
         var serialNumber = 1;
 
@@ -457,7 +631,7 @@
                             </select>
                         </div>
                         <div class="btn-group" role="group" aria-label="Third group" style="margin-left: 5px;">
-                            <button type="button" class="btn button_border" data-bs-toggle="modal" data-bs-target="#unitmodal" data-bs-whatever="@mdo">
+                            <button type="button" id="itmodalBtn" class="btn button_border" data-bs-toggle="modal" data-bs-target="#itModal" data-bs-whatever="@mdo">
                                 <span class="fa fa-plus"></span>
                             </button>
                         </div>
@@ -469,48 +643,67 @@
                 <td class="p-3"><input type="text" class="form-control small-input" id="tax_${serialNumber}" name="tax"></td>
                 <td class="p-3"><input type="number" class="form-control small-input" id="discount_${serialNumber}" name="discount" value="0"></td>
                 <td class="p-3"><input type="text" class="form-control small-input" id="total_${serialNumber}" name="total"></td>
-                <td class="p-3"><button type="button" class="btn button_border" data-bs-toggle="modal" data-bs-target="#unitmodal" data-bs-whatever="@mdo">
+                <td class="p-3"><button type="button" class="btn button_border delete-row-button">
                     <span class="fa fa-minus"></span>
                 </button></td>
             `;
 
             tbody.appendChild(newRow);
         }
+        
+        $('#item_name').select2();
 
-        var addRowButton = document.querySelector('.add-row-button');
-        addRowButton.addEventListener('click', function () {
-            addNewRow();
-        });
-        document.addEventListener('click', function (event) {
-            if (event.target.classList.contains('delete-row-button')) {
-                // Get the parent row and remove it
-                var row = event.target.closest('tr');
-                if (row) {
-                    row.remove();
-                }
-            }
+
+        $('#unitmodalBtn').on('click', function (event) {
+        console.log('Unit Modal is about to be shown');
+        $('#unitModal').modal('show');
+       
         });
 
-        var tabButtons = document.querySelectorAll(".tabContainer .nav .nav-item button");
-        var tabPanels = document.querySelectorAll(".tabContainer .tab-pane");
 
-        function showPanel(panelIndex) {
-            tabButtons.forEach(function (node) {
-                node.style.backgroundColor = "";
-                node.style.color = "";
-            });
-            tabButtons[panelIndex].style.backgroundColor = "#68020F";
-            tabButtons[panelIndex].style.color = "white";
-            tabPanels.forEach(function (node) {
-                node.style.display = "none";
-            });
-            tabPanels[panelIndex].style.display = "block";
-        }
-        showPanel(0);
-
-        $('#unitmodal').on('show.bs.modal', function (event) {
-            console.log('Modal is about to be shown');
+        $('#itmodalBtn').on('click', function (event) {
+            console.log('Before showing modal');
+            $('#itModal').modal('show');
+            console.log('After showing modal');
         });
+
     });
+
+
+    var tabButtons=document.querySelectorAll(".tabContainer .nav .nav-item button");
+    var tabPanels=document.querySelectorAll(".tabContainer .tab-pane");
+
+    function showPanel(panelIndex){
+        tabButtons.forEach(function(node){
+            node.style.backgroundColor="";
+            node.style.color="";
+        });
+        tabButtons[panelIndex].style.backgroundColor= "#68020F";
+        tabButtons[panelIndex].style.color= "white";
+        tabPanels.forEach(function(node){
+            node.style.display="none";
+        });
+        tabPanels[panelIndex].style.display="block";
+    }
+    showPanel(0);
+
+    var tabButtons2=document.querySelectorAll(".tabContainer2 .nav .nav-item button");
+    var tabPanels2=document.querySelectorAll(".tabContainer2 .tab-pane");
+
+    function showPanel2(panelIndex){
+        tabButtons2.forEach(function(node){
+            node.style.backgroundColor="";
+            node.style.color="";
+        });
+        tabButtons2[panelIndex].style.backgroundColor= "#68020F";
+        tabButtons2[panelIndex].style.color= "white";
+        tabPanels2.forEach(function(node){
+            node.style.display="none";
+        });
+        tabPanels2[panelIndex].style.display="block";
+    }
+    showPanel2(0);
+   
+    
 </script>
 {% endblock %}
