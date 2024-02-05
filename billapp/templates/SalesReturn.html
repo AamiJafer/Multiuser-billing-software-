@@ -81,6 +81,9 @@
         margin-left: 8px;
     }
     
+    input[type="radio"]:checked {
+        background-color: #68020F;
+    }
 
 </style>
 <div class="body-wrapper">
@@ -88,10 +91,28 @@
         <br><br><br><br><br><br><br>
         <div class="p-3 mb-5" style="border: 2px solid #68020F; border-radius: 2.5vh; background-color: #FFD6D7;">
             <div class="card-body">
-                <form class="row g-3" method="post">
+                <h1 class="modal-title fs-5 p-1" id="exampleModalLabel"
+                                    style="color: #68020F; font-weight: 900;">ADD CREDITNOTE</h1>
+                    <div class="form-group row">
+                        <div class="col-md-6" style="display: flex; margin-top: 10px; margin-left: 10px;">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="partystatus" id="partyonRadio" value="partyon" checked  style="border-color: black;">
+                                <label class="form-check-label" for="partyRadio">
+                                    Party ON
+                                </label>
+                            </div>
+                            <div class="form-check" style="margin-left: 30px;">
+                                <input class="form-check-input" type="radio" name="partystatus" id="partyoffRadio" value="partyoff" style="border-color: black;">
+                                <label class="form-check-label" for="partyRadio">
+                                    Party OFF
+                                </label>
+                            </div>
+                        </div><br>  
+                    </div>
+                <form class="row g-3 " method="post">
                     {% csrf_token %}
-                    <div class="row mt-3">
-                        <div class="col-md-4">
+                    <div class="row mt-5">
+                        <div class="col-md-4 partyon">
                             <label for="" class="form-label">Party Name</label>
                             <div style="display: flex;">
                                 <div class="myDropDown">
@@ -120,7 +141,7 @@
                             </div>
                             <span id="balance">Available Balance:</span>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-4 partyon">
                             <label for="" class="form-label">Phone Number</label>
                             <input type="text" class="form-control" id="party_phone" name="party_phone">
                             
@@ -130,7 +151,7 @@
                             <input type="text" class="form-control" id="" name="refnum">
                         </div>
                     </div>
-                    <div class="row mt-3" style="display: block;">
+                    <div class="row mt-3 partyon" style="display: block;">
                         <div class="col-md-4">
                             <label for="validationDefaultUsername" class="form-label">Invoice Number</label>
                             <input type="text" class="form-control" id="invoiceno" name="invoiceno">
@@ -214,7 +235,61 @@
                                     </button>
                         </div>
                     </div>
-                    
+
+                    <div class="row p-5 g-3" style="width: 450px; border:1px solid #68020F;margin-left: 10px;">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="validationDefaultUsername" class="form-label">Sub Total</label>
+                            
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" id="" name="placesupply">
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label for="validationDefaultUsername" class="form-label">VAT</label>
+                            
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" id="" name="placesupply">
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label for="validationDefaultUsername" class="form-label">Tax Amount</label>
+                            
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" id="" name="placesupply">
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label for="validationDefaultUsername" class="form-label">Adjustment</label>
+                            
+                            </div>
+                            <div class="col-md-6">
+                                <input type="number" class="form-control" id="" name="placesupply" value="0">
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label for="validationDefaultUsername" class="form-label">Grand Total</label>
+                            
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" id="" name="placesupply">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 d-flex mt-3">
+
+                        <button type="button" class="btn button_border me-3">SAVE & NEW</button>
+                        <button type="submit" class="btn button_border me-3">SAVE</button>
+
+                    </div>
+
                 </form>
                 <div class="modal fade" id="unitModal" tabindex="-1" aria-labelledby="exampleModalLabel"aria-hidden="true">
                     <div class="modal-dialog modal-lg">
@@ -234,22 +309,21 @@
                                                 <div class="col-md-4">
                                                         <label for="party_name" class="col-form-label">PARTY
                                                             NAME</label>
-                                                        <input type="text" class="form-control _border" id=""
-                                                            placeholder="Enter Party Name"
-                                                            style="border: 2px solid #68020F;" name='party_name'>
+                                                        <input type="text" class="form-control" id=""
+                                                            placeholder="Enter Party Name" name='party_name'>
                                                 </div>
                                                 <div class="col-md-4">
                                                         <label for="party_address"
                                                             class="col-form-label">GSTIN</label>
-                                                        <input type="text" class="form-control _border" id=""
+                                                        <input type="text" class="form-control" id=""
                                                             placeholder="29APPCK7465F1Z1"
-                                                            style="border: 2px solid #68020F;" name='gst_no'>
+                                                            name='gst_no'>
                                                 </div>
                                                 <div class="col-md-4">
                                                         <label for="party_name" class="col-form-label">MOBILE</label>
-                                                        <input type="text" class="form-control _border" id=""
+                                                        <input type="text" class="form-control" id=""
                                                             placeholder="Enter Mobile Number"
-                                                            style="border: 2px solid #68020F;" name='party_num'>
+                                                             name='party_num'>
                                                 </div>
                                             </div>
                                             <div class="tabContainer">
@@ -286,22 +360,22 @@
                                                             </div><br>
                                                             <div>
                                                                 <label for="state" class="col-form-label">Supply State</label>
-                                                                <input type="text" class="form-control _border" id=""
+                                                                <input type="text" class="form-control" id=""
                                                                     placeholder="Enter State"
-                                                                    style="border: 2px solid #68020F;" name='supp_state'>
+                                                                    name='supp_state'>
                                                             </div><br>
                                                             <div>
                                                                 <label for="email" class="col-form-label">Email</label>
-                                                                <input type="email" class="form-control _border" id=""
+                                                                <input type="email" class="form-control" id=""
                                                                     placeholder="Enter EmailId"
-                                                                    style="border: 2px solid #68020F;" name='email'>
+                                                                    name='email'>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
                                                             <div>
                                                                 <label for="address" class="col-form-label">Billing Address</label>
-                                                                <textarea class="form-control _border" id="" placeholder="Enter Party Address"
-                                                                    style="border: 2px solid #68020F;" rows="6" name="party_addr"></textarea>
+                                                                <textarea class="form-control" id="" placeholder="Enter Party Address"
+                                                                    rows="6" name="party_addr"></textarea>
                                                             
 
                                                             </div>
@@ -333,23 +407,23 @@
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             
-                                                            <input type="number" class="form-control _border" id=""
+                                                            <input type="number" class="form-control" id=""
                                                                 placeholder=""
-                                                                style="border: 2px solid #68020F; margin-top: 40px;" name='creditamt'>
+                                                                style="margin-top: 40px;" name='creditamt'>
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label for="creditLimit" class="col-form-label">Credit Limit</label>
-                                                            <input type="number" class="form-control _border" id=""
+                                                            <input type="number" class="form-control" id=""
                                                                 placeholder=""
-                                                                style="border: 2px solid #68020F;" name='crLimit'>
+                                                                name='crLimit'>
                                                         </div>
                                                     </div><br>
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <label for="date" class="col-form-label">Date</label>
-                                                            <input type="date" class="form-control _border" id=""
+                                                            <input type="date" class="form-control" id=""
                                                                 placeholder=""
-                                                                style="border: 2px solid #68020F;" name='credit_date'>
+                                                                name='credit_date'>
                                                         </div>
                                                     </div><br>
                                                     <div class="col-md-12 d-flex justify-content-start mt-3">
@@ -364,21 +438,21 @@
                                                     <div class="row">
                                                         <div class="col-md-4">
                                                             <label for="add1" class="col-form-label">Additional Field1</label>
-                                                            <input type="text" class="form-control _border" id=""
+                                                            <input type="text" class="form-control" id=""
                                                                 placeholder=""
-                                                                style="border: 2px solid #68020F;" name='addField1'>
+                                                                name='addField1'>
                                                         </div>
                                                         <div class="col-md-4">
                                                             <label for="add2" class="col-form-label">Additional Field2</label>
-                                                            <input type="text" class="form-control _border" id=""
+                                                            <input type="text" class="form-control" id=""
                                                                 placeholder=""
-                                                                style="border: 2px solid #68020F;" name='addField2'>
+                                                                name='addField2'>
                                                         </div>
                                                         <div class="col-md-4">
                                                             <label for="add3" class="col-form-label">Additional Field3</label>
-                                                            <input type="text" class="form-control _border" id=""
+                                                            <input type="text" class="form-control" id=""
                                                                 placeholder=""
-                                                                style="border: 2px solid #68020F;" name='addField3'>
+                                                                name='addField3'>
                                                         </div>
                                                         <div class="col-md-12 d-flex justify-content-start mt-5">
 
@@ -412,7 +486,7 @@
                             <div class="container">
                                 <div class="modal-body mb-1 pb-1">
                                     <div class="container-fluid">
-                                        <form id="itmodalform" action="" method="post" enctype="multipart/form-data">
+                                        <form id="itmodalform" action="{% url 'saveItem' %}" method="post" enctype="multipart/form-data">
                                             {% csrf_token %}
                                             <div class="form-group row">
                                                 <div class="col-md-3">
@@ -433,8 +507,25 @@
                                                     <input type="number" class="form-control" id="" name='item_hsn'>
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <label for="item_unit" class="col-form-label">Item Unit</label>
-                                                    <input type="text" class="form-control _border" id="" name='item_unit'>
+                                                    <label class="col-form-label" for="item_unit">UNIT</label>
+                                                    <div style="display: flex;">
+                                                        <div class="myDropDown">
+                                                            <select class="form-control" id="item_unit" name="item_unit">
+                                                                <option value="" selected disabled>Select an option</option>
+                                                                <option value="Numbers">Numbers</option>
+                                                                <option value="Packages">Packages</option>
+                                                                <option value="Box">Box</option>
+                                                                {% for i in unit %}
+                                                                <option value="{{ i.unit_name }}">{{ i.unit_name }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                        <div class="btn-group" role="group" aria-label="Third group" style="margin-left: 5px;">
+                                                            <button type="button" class="btn button_border" data-bs-toggle="modal" data-bs-target="#unitsModal" data-bs-whatever="@mdo">
+                                                            <span class="fa fa-plus" ></span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="tabContainer2">
@@ -455,19 +546,20 @@
                                                     <div class="form-group row">
                                                         <div class="col-md-6" style="display: flex;">
                                                             <div class="form-check">
-                                                                <input class="form-check-input" type="radio" name="taxStatus" id="taxableRadio" value="taxable" checked>
+                                                                <input class="form-check-input" type="radio" name="taxStatus" id="taxableRadio" value="taxable" checked style="border-color: black;">
                                                                 <label class="form-check-label" for="taxableRadio">
                                                                     Taxable
                                                                 </label>
                                                             </div>
                                                             <div class="form-check" style="margin-left: 30px;">
-                                                                <input class="form-check-input" type="radio" name="taxStatus" id="exemptedRadio" value="exempted">
+                                                                <input class="form-check-input" type="radio" name="taxStatus" id="exemptedRadio" value="exempted" style="border-color: black;">
                                                                 <label class="form-check-label" for="exemptedRadio">
                                                                     Tax Exempted
                                                                 </label>
                                                             </div>
                                                         </div><br>  
                                                     </div>
+                                                    <div class="taxable-fields">
                                                     <div class="form-group row mt-3"> 
                                                         <div class="col-md-6">                                                                                                                  
                                                             <label for="vat" class="col-form-label">VAT</label>
@@ -492,7 +584,7 @@
                                                             </div>
                                                         </div>
                                                     </div>    
-                                        
+                                                    </div>
                                                     <div class="col-md-12 d-flex justify-content-start mt-5">
                                                         <button type="button" class="btn button_border me-3" onclick="showPanel2(1)">NEXT</button>
                                                     </div>
@@ -537,10 +629,35 @@
                                 </div>
                             </div>
                         </div>
-                    </div>        
+                    </div> 
+                  
                 </div>
-
-
+                <div class="modal fade" id="unitsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h1 class="modal-title fs-5" id="exampleModalLabel" style="color: #68020F; font-weight: 900;">ADD UNIT</h1>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body mb-1 pb-1">
+                          <form class="mb-0" id="unitsModal">
+                            <div class="mb-3">
+                              <label for="unit_name" class="col-form-label">UNIT</label>
+                              <input type="text" class="form-control _border" id="unit_name" placeholder="Enter Unit" style="border: 2px solid #68020F;" name='unit_name'>
+                            </div>
+                            <div class="m-0 text-center">
+                              <label for="message-text" class="col-form-label  text-danger fw-lighter">Example : PCS/BOX/LITER</label>
+                            </div>
+                          </form>
+                        </div>
+                        <div class="modal-footer d-flex justify-content-center mt-1">
+                          <button type="button" class="btn ps-5 pe-5 button_border" data-bs-dismiss="modal">Close</button>
+                          <button type="button" class="btn ps-5 pe-5 button_border" id="unitmodalsubmit">ADD</button>
+                        </div>
+                      </div>
+                    </div>
+                  
+                </div>
             </div>
 
         </div>
@@ -548,7 +665,22 @@
 </div>
 
 <script>
-    $(document).ready(function () {
+    document.addEventListener('DOMContentLoaded', function () {
+        var taxableRadio = document.getElementById('taxableRadio');
+        var exemptedRadio = document.getElementById('exemptedRadio');
+        var taxableFields = document.querySelectorAll('.taxable-fields');
+
+        function toggleTaxableFields() {
+            var displayValue = taxableRadio.checked ? 'block' : 'none';
+            taxableFields.forEach(function (field) {
+                field.style.display = displayValue;
+            });
+        }
+
+        taxableRadio.addEventListener('change', toggleTaxableFields);
+        exemptedRadio.addEventListener('change', toggleTaxableFields);
+
+        toggleTaxableFields();
   
         $('#party_name').select2();
         $('#balance').hide();
@@ -577,6 +709,21 @@
                 $('#balance').hide();
             }
         });
+        var partyonRadio = document.getElementById('partyonRadio');
+        var partyoffRadio = document.getElementById('partyoffRadio');
+        var partyonFields = document.querySelectorAll('.partyon');
+
+        function togglepartyonFields() {
+            var displayValue = partyonRadio.checked ? 'block' : 'none';
+            partyonFields.forEach(function (field) {
+                field.style.display = displayValue;
+            });
+        }
+
+        partyonRadio.addEventListener('change', togglepartyonFields);
+        partyoffRadio.addEventListener('change', togglepartyonFields);
+
+        togglepartyonFields();
 
         function calculateReferenceNumber(previousRefNum) {
             if (!previousRefNum) {
@@ -666,8 +813,30 @@
             $('#itModal').modal('show');
             console.log('After showing modal');
         });
-
     });
+
+
+    $("#unitmodalsubmit").click(function () {
+    $.ajax({
+      type: "POST", 
+      url: "{% url 'create_unit' %}",
+      data: {
+        unit_name:document.getElementById('unit_name').value
+      },
+      beforeSend: function (xhr, settings) {
+          xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+      },
+      success: function (response) {
+          $("#unitsModal").hide();
+          $(".modal-backdrop").remove();
+          document.getElementById('unit_name').value = ''
+          var dropdown = $('#item_unit');
+          dropdown.append(`<option value='${response.unit_name}'>${response.unit_name}</option>`);
+          $('#itModal').modal('show');
+      },
+    });
+  });
+
 
 
     var tabButtons=document.querySelectorAll(".tabContainer .nav .nav-item button");
@@ -703,7 +872,5 @@
         tabPanels2[panelIndex].style.display="block";
     }
     showPanel2(0);
-   
-    
 </script>
 {% endblock %}

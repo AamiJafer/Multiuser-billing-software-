@@ -9,6 +9,8 @@ from django.core.mail import send_mail
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
 
 def home(request):
   return render(request, 'home.html')
@@ -340,7 +342,8 @@ def SalesReturn(request):
       cmp = request.user.employee.company      
   parties = Party.objects.filter(company=cmp)
   items = Item.objects.filter(company=cmp)
-  context = {'usr':request.user, 'parties':parties, 'items':items}
+  unit=Unit.objects.filter(company=cmp)
+  context = {'usr':request.user, 'parties':parties, 'items':items,'unit':unit}
   return render(request,'SalesReturn.html',context)
 
 def saveParty(request):
@@ -386,6 +389,60 @@ def saveParty(request):
           )
           party.save()
           return redirect('SalesReturn')
+      
+@csrf_exempt
+def create_unit(request):
+  if request.method == 'POST':
+    if request.user.is_company:
+      cmp = request.user.company
+    else:
+      cmp = request.user.employee.company  
+    unit_name = request.POST.get('unit_name')
+    new_unit = Unit.objects.create(company=cmp,unit_name=unit_name)
+    response_data = {'unit_name': new_unit.unit_name, 'unit_id': new_unit.id}
+    return JsonResponse(response_data)
+  else:
+    return JsonResponse({'error': 'Invalid method'}, status=400)
 
+
+def saveItem(request):
+  if request.method == 'POST':
+    if request.user.is_company:
+      cmp = request.user.company
+    else:
+      cmp = request.user.employee.company  
+    print(cmp)
+    usr = CustomUser.objects.get(username=request.user)
+    item_type=request.POST['item_type']
+    item_name=request.POST['item_name']
+    item_hsn=request.POST['item_hsn']
+    item_unit=request.POST['item_unit']
+    itm_taxable=request.POST['taxStatus']
+    if 'taxStatus'=='taxable':
+      vat=request.POST['vat']
+    else:
+      vat='0'
+    itm_sale_price=request.POST['item_slprice']
+    itm_purchase_price=request.POST['item_prprice']
+    itm_stock_in_hand=request.POST['item_opstock']
+    itm_at_price=request.POST['item_atprice']
+    itm_date=request.POST['item_stdate']
+    item = Item(
+              user=usr,
+              company=cmp,
+              itm_type=item_type,
+              itm_name=item_name,
+              itm_hsn=item_hsn,
+              itm_unit=item_unit,
+              itm_taxable=itm_taxable,
+              itm_vat=vat,
+              itm_sale_price=itm_sale_price,
+              itm_purchase_price=itm_purchase_price,
+              itm_stock_in_hand=itm_stock_in_hand,
+              itm_at_price=itm_at_price,
+              itm_date=itm_date
+          )
+    item.save()
+    return redirect('SalesReturn')
 
       
