@@ -81,10 +81,33 @@
         margin-left: 8px;
     }
     
-    input[type="radio"]:checked {
-        background-color: #68020F;
-    }
 
+    input[type="radio"]:checked{
+    accent-color: #68020F;
+  }
+
+  .input_border{
+    border: 1px solid #68020F;
+  }
+
+  .tb {
+    color: black;
+  }
+
+  ::-webkit-scrollbar {
+    display: none
+  }
+  select option:hover{
+    background-color: black;
+  }
+
+  input[type="radio"]:checked{
+    accent-color: #68020F;
+  }
+
+  .input_border{
+    border: 1px solid #68020F;
+  }
 </style>
 <div class="body-wrapper">
     <div class="container">
@@ -95,17 +118,18 @@
                                     style="color: #68020F; font-weight: 900;">ADD CREDITNOTE</h1>
                     <div class="form-group row">
                         <div class="col-md-6" style="display: flex; margin-top: 10px; margin-left: 10px;">
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="partystatus" id="partyonRadio" value="partyon" checked  style="border-color: black;">
-                                <label class="form-check-label" for="partyRadio">
+                            <div class="form-check">  
+                                <label style="user-select: none;" class="fs-4 tb" for="partyRadio">
                                     Party ON
                                 </label>
+                                <input class="me-1" type="radio" name="partystatus" id="partyonRadio" value="partyon" required>
                             </div>
                             <div class="form-check" style="margin-left: 30px;">
-                                <input class="form-check-input" type="radio" name="partystatus" id="partyoffRadio" value="partyoff" style="border-color: black;">
-                                <label class="form-check-label" for="partyRadio">
+                                
+                                <label style="user-select: none;" class="fs-4 tb" for="partyRadio">
                                     Party OFF
                                 </label>
+                                <input class="me-1" type="radio" name="partystatus" id="partyoffRadio" value="partyoff">
                             </div>
                         </div><br>  
                     </div>
@@ -228,6 +252,7 @@
                                 </tr>
                                 
                             </tbody>
+                            
                         </table>
                         <div class="col-md-4">
                             <button type="button" class="btn button_border add-row-button">
@@ -489,24 +514,24 @@
                                         <form id="itmodalform" action="{% url 'saveItem' %}" method="post" enctype="multipart/form-data">
                                             {% csrf_token %}
                                             <div class="form-group row">
-                                                <div class="col-md-3">
-                                                    <label for="party_name" class="col-form-label">ITEM TYPE</label>
-                                                    <select id="item_type" class="form-control" name="item_type">      
-                                                        <option value="" selected disabled>Select Item</option>
-                                                        <option value="Goods">Goods</option>
-                                                        <option value="Service">Service</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-3">
-                                                        <label for="item_name"
-                                                            class="col-form-label">ITEM NAME</label>
-                                                        <input type="text" class="form-control" id="" name='item_name'>
-                                                </div>
-                                                <div class="col-md-3">
+                                                <div class="d-flex">
+                                                    <div class="pt-3 w-50">
+                                                      <input type="text" name="itm_type" id="itm_type" hidden>
+                                                      <label style="user-select: none;" class="fs-4 tb" for="goods">Goods</label>
+                                                      <input id="goods" class="me-3 " type="radio" name="item_ty" required>
+                                                      <label style="user-select: none;" class="fs-4 tb" for="service">Services</label>
+                                                      <input id="service" type="radio" name="item_ty" required>
+                                                    </div>
+                                                    <div class="mb-3 w-50">
+                                                      <label class="fw-bold tb fs-3" for="">NAME</label><br>
+                                                      <input style="color: black;" class="form-control mt-2 input_border text-black" type="text" placeholder="Enter Item Name" autocomplete="off" name="name" >
+                                                    </div>
+                                                  </div>
+                                                <div class="col-md-6">
                                                     <label for="item_hsn" class="col-form-label">ITEM HSN</label>
                                                     <input type="number" class="form-control" id="" name='item_hsn'>
                                                 </div>
-                                                <div class="col-md-3">
+                                                <div class="col-md-6">
                                                     <label class="col-form-label" for="item_unit">UNIT</label>
                                                     <div style="display: flex;">
                                                         <div class="myDropDown">
@@ -544,32 +569,22 @@
                                                 </ul>
                                                 <div id="pricingForm" class="tab-pane p-3" style="margin-top: 3%;">
                                                     <div class="form-group row">
-                                                        <div class="col-md-6" style="display: flex;">
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" type="radio" name="taxStatus" id="taxableRadio" value="taxable" checked style="border-color: black;">
-                                                                <label class="form-check-label" for="taxableRadio">
-                                                                    Taxable
-                                                                </label>
-                                                            </div>
-                                                            <div class="form-check" style="margin-left: 30px;">
-                                                                <input class="form-check-input" type="radio" name="taxStatus" id="exemptedRadio" value="exempted" style="border-color: black;">
-                                                                <label class="form-check-label" for="exemptedRadio">
-                                                                    Tax Exempted
-                                                                </label>
-                                                            </div>
+                                                        <div class="col-md-6">
+                                                            <div class="pt-1 mb-4" >
+                                                                <input type="text" name="taxable_result" id="taxable_result" hidden>
+                                                                <label style="user-select: none;" class="fs-4 tb" for="item_tax_1">Tax</label> &nbsp;
+                                                                <input id="item_tax_1" class="me-3" type="radio" name="item_tax_result" required>
+                                                                <label style="user-select: none;" class="fs-4 tb" for="item_tax_2">Tax Excempted</label>&nbsp;
+                                                                <input id="item_tax_2" type="radio" name="item_tax_result" required>
+                                                              </div>
+                                          
+                                                              <div id="vatdiv" class="mb-2 pt-3" hidden>
+                                                                  <label class="fw-bold tb fs-3" for="">VAT</label><br>
+                                                                  <input type="text" class="form-control mt-1 input_border text-black" name="vat" id='vat'>
+                                                              </div>
                                                         </div><br>  
                                                     </div>
                                                     <div class="taxable-fields">
-                                                    <div class="form-group row mt-3"> 
-                                                        <div class="col-md-6">                                                                                                                  
-                                                            <label for="vat" class="col-form-label">VAT</label>
-                                                                <select class="form-control" name="vat" id="vat" required>
-                                                                    <option selected hidden value="">Select</option>
-                                                                    <option value="vat0"> VAT0[0%] </option>
-                                                                    <option value="vat5"> VAT5[5%] </option>
-                                                                </select>
-                                                        </div><br>
-                                                    </div>
                                                     <div class="form-group row mt-3">    
                                                         <div class="col-md-6">
                                                             <div>
@@ -664,51 +679,33 @@
     </div>
 </div>
 
+
+
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var taxableRadio = document.getElementById('taxableRadio');
-        var exemptedRadio = document.getElementById('exemptedRadio');
-        var taxableFields = document.querySelectorAll('.taxable-fields');
-
-        function toggleTaxableFields() {
-            var displayValue = taxableRadio.checked ? 'block' : 'none';
-            taxableFields.forEach(function (field) {
-                field.style.display = displayValue;
-            });
-        }
-
-        taxableRadio.addEventListener('change', toggleTaxableFields);
-        exemptedRadio.addEventListener('change', toggleTaxableFields);
-
-        toggleTaxableFields();
-  
+   $(document).ready(function () {
         $('#party_name').select2();
+        $('#item_name').select2();
         $('#balance').hide();
 
-        // Add event listener to party name dropdown
         $('#party_name').on('change', function () {
             var selectedParty = $(this).find(':selected');
 
-            console.log('Selected Party Data:', selectedParty.data());
-
             if (selectedParty.length) {
-           
                 $('#balance').text('Available Balance: ' + selectedParty.data('balance')).show();
-
                 $('#party_phone').val(selectedParty.data('phone'));
-               
                 $('#invoiceno').val(selectedParty.data('invoiceno'));
                 $('#invoicedate').val(selectedParty.data('invoicedate'));
                 $('#balance').val(selectedParty.data('balance'));
-                // $('input[name="placesupply"]').val(selectedParty.data('placesupply'));
                 $('input[name="paymethod"]').val(selectedParty.data('paymethod'));
                 var referenceNumber = calculateReferenceNumber(selectedParty.data('refnum'));
                 $('input[name="refnum"]').val(referenceNumber);
-            }
-            else{
+            } else {
                 $('#balance').hide();
             }
         });
+
+
+
         var partyonRadio = document.getElementById('partyonRadio');
         var partyoffRadio = document.getElementById('partyoffRadio');
         var partyonFields = document.querySelectorAll('.partyon');
@@ -735,109 +732,149 @@
             return nextRefNum;
         }
 
-        document.addEventListener('click', function (event) {
-            var deleteButtons = document.querySelectorAll('.delete-row-button');
-            deleteButtons.forEach(function (button) {
-                button.addEventListener('click', function () {
-                    var row = button.closest('tr');
-                    if (row) {
-                        row.remove();
-                    }
-                });
-            });
+        $(document).on('change', 'select[name="item_name"]', function () {
+            var selectedItem = $(this).find(':selected');
+            var parentRow = $(this).closest('tr');
+
+            if (selectedItem.length) {
+                parentRow.find('input[name="hsn"]').val(selectedItem.data('hsn'));
+                parentRow.find('input[name="qty"]').val(selectedItem.data('qty'));
+                parentRow.find('input[name="price"]').val(selectedItem.data('price'));
+                parentRow.find('input[name="tax"]').val(selectedItem.data('tax'));
+    
+            }
         });
 
+        function initializeSelect2ForItemName(id) {
+        $('#item_name_' + id).select2();
+        }
 
-        var addRowButton = document.querySelector('.add-row-button');
-        addRowButton.addEventListener('click', function () {
+
+        $('.add-row-button').on('click', function () {
             addNewRow();
         });
 
-        var serialNumber = 1;
+        $(document).on('click', '.delete-row-button', function () {
+            $(this).closest('tr').remove();
+        });
 
         function addNewRow() {
-            serialNumber++;
+            
+            var serialNumber = $('.table tbody tr').length + 1;
 
-            var tbody = document.querySelector('.table tbody');
-
-            var newRow = document.createElement('tr');
-            newRow.innerHTML = `
-                <td class="p-3">${serialNumber}</td>
-                <td class="p-3">
-                    <div style="display: flex;">
-                        <div class="myDropDown">
-                            <select id="item_name_${serialNumber}" class="form-control" name="item_name">
-                                <option value="" selected disabled>Select Item</option>
-                                {% for item in items %}
-                                    <option value="${item.id}" 
-                                        data-hsn="${item.itm_hsn}" 
-                                        data-qty="${item.itm_unit}"
-                                        data-price="${item.itm_sale_price}"
-                                        data-tax="${item.itm_vat}">${item.itm_name}</option>
-                                {% endfor %}
-                            </select>
+            var newRow = `
+                <tr>
+                    <td class="p-3">${serialNumber}</td>
+                    <td class="p-3">
+                        <div style="display: flex;">
+                            <div class="myDropDown">
+                                <select id="item_name_${serialNumber}" class="form-control" name="item_name">
+                                    <option value="" selected disabled>Select Item</option>
+                                    
+                                </select>
+                            </div>
+                            <div class="btn-group" role="group" aria-label="Third group" style="margin-left: 5px;">
+                                <button type="button" id="itmodalBtn" class="btn button_border" data-bs-toggle="modal" data-bs-target="#itModal" data-bs-whatever="@mdo">
+                                    <span class="fa fa-plus"></span>
+                                </button>
+                            </div>
                         </div>
-                        <div class="btn-group" role="group" aria-label="Third group" style="margin-left: 5px;">
-                            <button type="button" id="itmodalBtn" class="btn button_border" data-bs-toggle="modal" data-bs-target="#itModal" data-bs-whatever="@mdo">
-                                <span class="fa fa-plus"></span>
-                            </button>
-                        </div>
-                    </div>
-                </td>
-                <td class="p-3"><input type="text" class="form-control small-input" id="hsn_${serialNumber}" name="hsn"></td>
-                <td class="p-3"><input type="number" class="form-control small-input" id="qty_${serialNumber}" name="qty"></td>
-                <td class="p-3"><input type="text" class="form-control small-input" id="price_${serialNumber}" name="price"></td>
-                <td class="p-3"><input type="text" class="form-control small-input" id="tax_${serialNumber}" name="tax"></td>
-                <td class="p-3"><input type="number" class="form-control small-input" id="discount_${serialNumber}" name="discount" value="0"></td>
-                <td class="p-3"><input type="text" class="form-control small-input" id="total_${serialNumber}" name="total"></td>
-                <td class="p-3"><button type="button" class="btn button_border delete-row-button">
-                    <span class="fa fa-minus"></span>
-                </button></td>
+                    </td>
+                    <td class="p-3"><input type="text" class="form-control small-input" id="hsn_${serialNumber}" name="hsn"></td>
+                    <td class="p-3"><input type="number" class="form-control small-input" id="qty_${serialNumber}" name="qty"></td>
+                    <td class="p-3"><input type="text" class="form-control small-input" id="price_${serialNumber}" name="price"></td>
+                    <td class="p-3"><input type="text" class="form-control small-input" id="tax_${serialNumber}" name="tax"></td>
+                    <td class="p-3"><input type="number" class="form-control small-input" id="discount_${serialNumber}" name="discount" value="0"></td>
+                    <td class="p-3"><input type="text" class="form-control small-input" id="total_${serialNumber}" name="total"></td>
+                    <td class="p-3"><button type="button" class="btn button_border delete-row-button">
+                        <span class="fa fa-minus"></span>
+                    </button></td>
+                </tr>
             `;
 
-            tbody.appendChild(newRow);
-        }
-        
-        $('#item_name').select2();
+            $('.table tbody').append(newRow);
+            var defaultOptions = $('#item_name option:not([disabled])').clone();
+            $('#item_name_' + serialNumber).append(defaultOptions);
 
+            initializeSelect2ForItemName(serialNumber);
+            
+        }
 
         $('#unitmodalBtn').on('click', function (event) {
-        console.log('Unit Modal is about to be shown');
-        $('#unitModal').modal('show');
-       
+            $('#unitModal').modal('show');
         });
-
 
         $('#itmodalBtn').on('click', function (event) {
-            console.log('Before showing modal');
             $('#itModal').modal('show');
-            console.log('After showing modal');
+        });
+
+        function calculateReferenceNumber(previousRefNum) {
+            if (!previousRefNum) {
+                return 1;
+            }
+
+            return parseInt(previousRefNum) + 1;
+        }
+    });
+
+    $("#unitmodalsubmit").click(function () {
+        $.ajax({
+            type: "POST",
+            url: "{% url 'create_unit' %}",
+            data: {
+                unit_name: document.getElementById('unit_name').value
+            },
+            beforeSend: function (xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+            },
+            success: function (response) {
+                $("#unitsModal").hide();
+                $(".modal-backdrop").remove();
+                document.getElementById('unit_name').value = ''
+                var dropdown = $('#item_unit');
+                dropdown.append(`<option value='${response.unit_name}'>${response.unit_name}</option>`);
+                $('#itModal').modal('show');
+            },
         });
     });
 
-
-    $("#unitmodalsubmit").click(function () {
-    $.ajax({
-      type: "POST", 
-      url: "{% url 'create_unit' %}",
-      data: {
-        unit_name:document.getElementById('unit_name').value
-      },
-      beforeSend: function (xhr, settings) {
-          xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
-      },
-      success: function (response) {
-          $("#unitsModal").hide();
-          $(".modal-backdrop").remove();
-          document.getElementById('unit_name').value = ''
-          var dropdown = $('#item_unit');
-          dropdown.append(`<option value='${response.unit_name}'>${response.unit_name}</option>`);
-          $('#itModal').modal('show');
-      },
+    $(document).ready(function(){
+        $('#goods').on('click',function(){
+            $('#itm_type').val('Goods')
+        })
     });
-  });
 
+    $(document).ready(function(){
+        $('#service').on('click',function(){
+            $('#itm_type').val('Service')
+        })
+    });
 
+    $(document).ready(function(){
+        $('#item_tax_1').on('click',function(){
+            $('#vatdiv').attr('hidden',false)
+            $('#vat').val('VAT 5%')
+        });
+    });
+
+    $(document).ready(function(){
+        $('#item_tax_2').on('click',function(){
+            $('#vatdiv').attr('hidden',false)
+            $('#vat').val('VAT 0%')
+        });
+    });
+
+    $(document).ready(function(){
+        $('#item_tax_1').on('click',function(){
+            $('#taxable_result').val('Taxable')
+        });
+    });
+
+    $(document).ready(function(){
+        $('#item_tax_2').on('click',function(){
+            $('#taxable_result').val('Non Taxable')
+        });
+    });
 
     var tabButtons=document.querySelectorAll(".tabContainer .nav .nav-item button");
     var tabPanels=document.querySelectorAll(".tabContainer .tab-pane");
