@@ -442,4 +442,12 @@ def saveItem(request):
     item.save()
     return redirect('SalesReturn')
 
-      
+def credit_note_count(request):
+    if request.user.is_company:
+      cmp = request.user.company
+    else:
+      cmp = request.user.employee.company
+    credit_notes = CreditNote.objects.filter(company=cmp)
+    count = credit_notes.count()
+    highest_entry_id = credit_notes.order_by('-id').first().id if count > 0 else None
+    return JsonResponse({'count': count, 'highestEntryID': highest_entry_id})

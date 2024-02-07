@@ -149,7 +149,7 @@
                                         data-invoiceno="{{ party.salesinvoice.invoice_no }}"
                                         data-invoicedate="{{ party.salesinvoice.date|date:'Y-m-d' }}"
                                         data-balance="{{party.openingbalance}}"
-                                        data-placesupply="{{ party.placesupply }}"
+                                        data-placesupply="{{ party.salesinvoice.address }}"
                                         data-paymethod="{{ party.payment }}">{{ party.party_name }}</option>
                                         {% endfor %}            
                                     </select>
@@ -193,7 +193,7 @@
                         </div>
                         <div class="col-md-4">
                             <label for="validationDefaultUsername" class="form-label">Place of Supply</label>
-                            <input type="text" class="form-control" id="" name="placesupply">
+                            <input type="text" class="form-control" id="placesupply" name="placesupply">
                         </div>
                         <div class="col-md-4">
                             <label for="validationDefaultUsername" class="form-label">Payment method</label>
@@ -226,7 +226,6 @@
                                                     {% for item in items %}
                                                     <option value="{{ item.id }}" 
                                                     data-hsn="{{ item.itm_hsn }}" 
-                                                    data-qty="{{ item.itm_unit }}"
                                                     data-price="{{ item.itm_sale_price }}"
                                                     data-tax="{{ item.itm_vat }}">{{ item.itm_name }}</option>
                                                     {% endfor %}            
@@ -240,12 +239,13 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="p-3"><input type="text" class="form-control small-input" id="hsn" name="hsn"></td>
-                                    <td class="p-3"><input type="number" class="form-control small-input" id="qty" name="qty"></td>
-                                    <td class="p-3"><input type="text" class="form-control small-input" id="price" name="price"></td>
-                                    <td class="p-3"><input type="text" class="form-control small-input" id="tax" name="tax"></td>
-                                    <td class="p-3"><input type="number" class="form-control small-input" id="discount" name="discount" value="0"></td>
-                                    <td class="p-3"><input type="text" class="form-control small-input" id="total" name="total"></td>
+                                    <td class="p-3"><input type="text" class="form-control small-input hsn-input" id="hsn" name="hsn"></td>
+                                    <td class="p-3"><input type="number" class="form-control small-input qty-input" id="qty" name="qty" value="0"></td>
+                                    <td class="p-3"><input type="text" class="form-control small-input price-input" id="price" name="price" value="0"></td>
+                                    <td class="p-3"><input type="text" class="form-control small-input tax-input" id="tax" name="tax"></td>
+                                    <input type="text" class="form-control small-input vatper-input" id="vatper" name="vatper" hidden>
+                                    <td class="p-3"><input type="number" class="form-control small-input discount-input" id="discount" name="discount" value="0"></td>
+                                    <td class="p-3"><input type="text" class="form-control small-input total-input" id="total" name="total" value="0"></td>
                                     <td class="p-3"><button type="button" class="btn button_border delete-row-button">
                                         <span class="fa fa-minus"></span>
                                     </button></td>
@@ -268,7 +268,7 @@
                             
                             </div>
                             <div class="col-md-6">
-                                <input type="text" class="form-control" id="" name="placesupply">
+                                <input type="text" class="form-control subtotal" id="subtotal" name="subtotal">
                             </div>
                         </div>
                         <div class="row mt-3">
@@ -277,7 +277,7 @@
                             
                             </div>
                             <div class="col-md-6">
-                                <input type="text" class="form-control" id="" name="placesupply">
+                                <input type="text" class="form-control" id="disvatper" name="disvatper">
                             </div>
                         </div>
                         <div class="row mt-3">
@@ -286,7 +286,7 @@
                             
                             </div>
                             <div class="col-md-6">
-                                <input type="text" class="form-control" id="" name="placesupply">
+                                <input type="text" class="form-control tax_amnt" id="tax_amnt" name="tax_amnt">
                             </div>
                         </div>
                         <div class="row mt-3">
@@ -295,7 +295,7 @@
                             
                             </div>
                             <div class="col-md-6">
-                                <input type="number" class="form-control" id="" name="placesupply" value="0">
+                                <input type="number" class="form-control adjustment" id="adjustment" name="adjustment" value="0">
                             </div>
                         </div>
                         <div class="row mt-3">
@@ -304,7 +304,7 @@
                             
                             </div>
                             <div class="col-md-6">
-                                <input type="text" class="form-control" id="" name="placesupply">
+                                <input type="text" class="form-control grandTotal" id="grandTotal" name="grandTotal">
                             </div>
                         </div>
                     </div>
@@ -682,11 +682,10 @@
 
 
 <script>
-   $(document).ready(function () {
+    $(document).ready(function () {
         $('#party_name').select2();
         $('#item_name').select2();
         $('#balance').hide();
-
         $('#party_name').on('change', function () {
             var selectedParty = $(this).find(':selected');
 
@@ -695,6 +694,7 @@
                 $('#party_phone').val(selectedParty.data('phone'));
                 $('#invoiceno').val(selectedParty.data('invoiceno'));
                 $('#invoicedate').val(selectedParty.data('invoicedate'));
+                $('#placesupply').val(selectedParty.data('placesupply'));
                 $('#balance').val(selectedParty.data('balance'));
                 $('input[name="paymethod"]').val(selectedParty.data('paymethod'));
                 var referenceNumber = calculateReferenceNumber(selectedParty.data('refnum'));
@@ -703,8 +703,6 @@
                 $('#balance').hide();
             }
         });
-
-
 
         var partyonRadio = document.getElementById('partyonRadio');
         var partyoffRadio = document.getElementById('partyoffRadio');
@@ -722,16 +720,6 @@
 
         togglepartyonFields();
 
-        function calculateReferenceNumber(previousRefNum) {
-            if (!previousRefNum) {
-                return 1;
-            }
-
-            var nextRefNum = parseInt(previousRefNum) + 1;
-
-            return nextRefNum;
-        }
-
         $(document).on('change', 'select[name="item_name"]', function () {
             var selectedItem = $(this).find(':selected');
             var parentRow = $(this).closest('tr');
@@ -741,14 +729,8 @@
                 parentRow.find('input[name="qty"]').val(selectedItem.data('qty'));
                 parentRow.find('input[name="price"]').val(selectedItem.data('price'));
                 parentRow.find('input[name="tax"]').val(selectedItem.data('tax'));
-    
             }
         });
-
-        function initializeSelect2ForItemName(id) {
-        $('#item_name_' + id).select2();
-        }
-
 
         $('.add-row-button').on('click', function () {
             addNewRow();
@@ -758,8 +740,11 @@
             $(this).closest('tr').remove();
         });
 
+        // Store the default options of the item name select element
+        var defaultItemOptions = $('#item_name option:not([disabled])').clone();
+
+        // Function to add new row
         function addNewRow() {
-            
             var serialNumber = $('.table tbody tr').length + 1;
 
             var newRow = `
@@ -768,24 +753,24 @@
                     <td class="p-3">
                         <div style="display: flex;">
                             <div class="myDropDown">
-                                <select id="item_name_${serialNumber}" class="form-control" name="item_name">
+                                <select id="item_name_${serialNumber}" class="form-control item-name" name="item_name">
                                     <option value="" selected disabled>Select Item</option>
-                                    
                                 </select>
                             </div>
                             <div class="btn-group" role="group" aria-label="Third group" style="margin-left: 5px;">
-                                <button type="button" id="itmodalBtn" class="btn button_border" data-bs-toggle="modal" data-bs-target="#itModal" data-bs-whatever="@mdo">
+                                <button type="button" class="btn button_border itmodalBtn" data-bs-toggle="modal" data-bs-target="#itModal" data-bs-whatever="@mdo">
                                     <span class="fa fa-plus"></span>
                                 </button>
                             </div>
                         </div>
                     </td>
-                    <td class="p-3"><input type="text" class="form-control small-input" id="hsn_${serialNumber}" name="hsn"></td>
-                    <td class="p-3"><input type="number" class="form-control small-input" id="qty_${serialNumber}" name="qty"></td>
-                    <td class="p-3"><input type="text" class="form-control small-input" id="price_${serialNumber}" name="price"></td>
-                    <td class="p-3"><input type="text" class="form-control small-input" id="tax_${serialNumber}" name="tax"></td>
-                    <td class="p-3"><input type="number" class="form-control small-input" id="discount_${serialNumber}" name="discount" value="0"></td>
-                    <td class="p-3"><input type="text" class="form-control small-input" id="total_${serialNumber}" name="total"></td>
+                    <td class="p-3"><input type="text" class="form-control small-input hsn-input" id="hsn_${serialNumber}" name="hsn"></td>
+                    <td class="p-3"><input type="number" class="form-control small-input qty-input" id="qty_${serialNumber}" name="qty" value="0"></td>
+                    <td class="p-3"><input type="text" class="form-control small-input price-input" id="price_${serialNumber}" name="price" value="0"></td>
+                    <td class="p-3"><input type="text" class="form-control small-input tax-input" id="tax_${serialNumber}" name="tax"></td>
+                    <input type="text" class="form-control small-input vatper-input" id="vatper_${serialNumber}" name="vatper" hidden>
+                    <td class="p-3"><input type="number" class="form-control small-input discount-input" id="discount_${serialNumber}" name="discount" value="0"></td>
+                    <td class="p-3"><input type="text" class="form-control small-input total-input" id="total_${serialNumber}" name="total" value="0"></td>
                     <td class="p-3"><button type="button" class="btn button_border delete-row-button">
                         <span class="fa fa-minus"></span>
                     </button></td>
@@ -793,11 +778,13 @@
             `;
 
             $('.table tbody').append(newRow);
-            var defaultOptions = $('#item_name option:not([disabled])').clone();
-            $('#item_name_' + serialNumber).append(defaultOptions);
-
-            initializeSelect2ForItemName(serialNumber);
             
+            $('#item_name_' + serialNumber).append(defaultItemOptions.clone());
+            initializeSelect2ForItemName(serialNumber);
+        }
+
+        function initializeSelect2ForItemName(id) {
+            $('#item_name_' + id).select2();
         }
 
         $('#unitmodalBtn').on('click', function (event) {
@@ -815,99 +802,152 @@
 
             return parseInt(previousRefNum) + 1;
         }
+
+        $(document).on('click', '#unitmodalsubmit', function () {
+            $.ajax({
+                type: "POST",
+                url: "{% url 'create_unit' %}",
+                data: {
+                    unit_name: document.getElementById('unit_name').value
+                },
+                beforeSend: function (xhr, settings) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                success: function (response) {
+                    $("#unitsModal").hide();
+                    $(".modal-backdrop").remove();
+                    document.getElementById('unit_name').value = ''
+                    var dropdown = $('#item_unit');
+                    dropdown.append(`<option value='${response.unit_name}'>${response.unit_name}</option>`);
+                    $('#itModal').modal('show');
+                },
+            });
+        });
+
+        $(document).ready(function(){
+            $('#goods').on('click',function(){
+                $('#itm_type').val('Goods')
+            })
+        });
+
+        $(document).ready(function(){
+            $('#service').on('click',function(){
+                $('#itm_type').val('Service')
+            })
+        });
+
+        $(document).ready(function(){
+            $('#item_tax_1').on('click',function(){
+                $('#vatdiv').attr('hidden',false)
+                $('#vat').val('VAT 5%')
+            });
+        });
+
+        $(document).ready(function(){
+            $('#item_tax_2').on('click',function(){
+                $('#vatdiv').attr('hidden',false)
+                $('#vat').val('VAT 0%')
+            });
+        });
+
+        $(document).ready(function(){
+            $('#item_tax_1').on('click',function(){
+                $('#taxable_result').val('Taxable')
+            });
+        });
+
+        $(document).ready(function(){
+            $('#item_tax_2').on('click',function(){
+                $('#taxable_result').val('Non Taxable')
+            });
+        });
+
+        var tabButtons=document.querySelectorAll(".tabContainer .nav .nav-item button");
+        var tabPanels=document.querySelectorAll(".tabContainer .tab-pane");
+
+        function showPanel(panelIndex){
+            tabButtons.forEach(function(node){
+                node.style.backgroundColor="";
+                node.style.color="";
+            });
+            tabButtons[panelIndex].style.backgroundColor= "#68020F";
+            tabButtons[panelIndex].style.color= "white";
+            tabPanels.forEach(function(node){
+                node.style.display="none";
+            });
+            tabPanels[panelIndex].style.display="block";
+        }
+        showPanel(0);
+
+        var tabButtons2=document.querySelectorAll(".tabContainer2 .nav .nav-item button");
+        var tabPanels2=document.querySelectorAll(".tabContainer2 .tab-pane");
+
+        function showPanel2(panelIndex){
+            tabButtons2.forEach(function(node){
+                node.style.backgroundColor="";
+                node.style.color="";
+            });
+            tabButtons2[panelIndex].style.backgroundColor= "#68020F";
+            tabButtons2[panelIndex].style.color= "white";
+            tabPanels2.forEach(function(node){
+                node.style.display="none";
+            });
+            tabPanels2[panelIndex].style.display="block";
+        }
+        showPanel2(0);
+
+        function calculateTotal(row) {
+            var qty = parseFloat(row.find('.qty-input').val());
+            var price = parseFloat(row.find('.price-input').val());
+            var discount = parseFloat(row.find('.discount-input').val());
+
+            var total=qty*price-discount;
+            var vatper=total*'0.05';
+            row.find('.total-input').val(total); 
+            row.find('.vatper-input').val(vatper);
+        }
+        $(document).on('input','.qty-input, .price-input, .discount-input,.adjustment', function(){
+            var row=$(this).closest('tr');
+            calculateTotal(row);
+            calculateSubtotal();
+            calculateTax();
+            calculateGrandtotal();
+        });
+
+        function calculateSubtotal(){
+            var subtotal = 0;
+            $('.table tbody tr').each(function() {
+                var total = parseFloat($(this).find('.total-input').val());
+                if (!isNaN(total)) {
+                    subtotal += total;
+                }
+            });
+            $('#subtotal').val(subtotal.toFixed(2)); 
+        }
+
+        function calculateTax(){
+            var totalTax = 0;
+            $('.table tbody tr').each(function() {
+                var total = parseFloat($(this).find('.total-input').val());
+                var tax=total*0.05;
+                totalTax+=tax;
+            });
+            $('#disvatper').val(totalTax); 
+            $('#tax_amnt').val(totalTax.toFixed(2));
+        }
+
+        function calculateGrandtotal(){
+            var grandtotal=0;
+            var subtotal=parseFloat($('.subtotal').val());
+            var vat=parseFloat($('.tax_amnt').val());
+            var adj=parseFloat($('.adjustment').val());
+            grandtotal=subtotal+vat+adj;
+            $('#grandTotal').val(grandtotal.toFixed(2))
+        }
+        
+        
+
+        
     });
-
-    $("#unitmodalsubmit").click(function () {
-        $.ajax({
-            type: "POST",
-            url: "{% url 'create_unit' %}",
-            data: {
-                unit_name: document.getElementById('unit_name').value
-            },
-            beforeSend: function (xhr, settings) {
-                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
-            },
-            success: function (response) {
-                $("#unitsModal").hide();
-                $(".modal-backdrop").remove();
-                document.getElementById('unit_name').value = ''
-                var dropdown = $('#item_unit');
-                dropdown.append(`<option value='${response.unit_name}'>${response.unit_name}</option>`);
-                $('#itModal').modal('show');
-            },
-        });
-    });
-
-    $(document).ready(function(){
-        $('#goods').on('click',function(){
-            $('#itm_type').val('Goods')
-        })
-    });
-
-    $(document).ready(function(){
-        $('#service').on('click',function(){
-            $('#itm_type').val('Service')
-        })
-    });
-
-    $(document).ready(function(){
-        $('#item_tax_1').on('click',function(){
-            $('#vatdiv').attr('hidden',false)
-            $('#vat').val('VAT 5%')
-        });
-    });
-
-    $(document).ready(function(){
-        $('#item_tax_2').on('click',function(){
-            $('#vatdiv').attr('hidden',false)
-            $('#vat').val('VAT 0%')
-        });
-    });
-
-    $(document).ready(function(){
-        $('#item_tax_1').on('click',function(){
-            $('#taxable_result').val('Taxable')
-        });
-    });
-
-    $(document).ready(function(){
-        $('#item_tax_2').on('click',function(){
-            $('#taxable_result').val('Non Taxable')
-        });
-    });
-
-    var tabButtons=document.querySelectorAll(".tabContainer .nav .nav-item button");
-    var tabPanels=document.querySelectorAll(".tabContainer .tab-pane");
-
-    function showPanel(panelIndex){
-        tabButtons.forEach(function(node){
-            node.style.backgroundColor="";
-            node.style.color="";
-        });
-        tabButtons[panelIndex].style.backgroundColor= "#68020F";
-        tabButtons[panelIndex].style.color= "white";
-        tabPanels.forEach(function(node){
-            node.style.display="none";
-        });
-        tabPanels[panelIndex].style.display="block";
-    }
-    showPanel(0);
-
-    var tabButtons2=document.querySelectorAll(".tabContainer2 .nav .nav-item button");
-    var tabPanels2=document.querySelectorAll(".tabContainer2 .tab-pane");
-
-    function showPanel2(panelIndex){
-        tabButtons2.forEach(function(node){
-            node.style.backgroundColor="";
-            node.style.color="";
-        });
-        tabButtons2[panelIndex].style.backgroundColor= "#68020F";
-        tabButtons2[panelIndex].style.color= "white";
-        tabPanels2.forEach(function(node){
-            node.style.display="none";
-        });
-        tabPanels2[panelIndex].style.display="block";
-    }
-    showPanel2(0);
 </script>
 {% endblock %}
