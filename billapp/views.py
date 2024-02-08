@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from django.core.exceptions import ObjectDoesNotExist
 
 def home(request):
   return render(request, 'home.html')
@@ -343,7 +344,7 @@ def SalesReturn(request):
   parties = Party.objects.filter(company=cmp)
   items = Item.objects.filter(company=cmp)
   unit=Unit.objects.filter(company=cmp)
-  context = {'usr':request.user, 'parties':parties, 'items':items,'unit':unit}
+  context = {'usr':request.user, 'parties':parties, 'items':items,'unit':unit,'cmp':cmp}
   return render(request,'SalesReturn.html',context)
 
 def saveParty(request):
@@ -442,12 +443,28 @@ def saveItem(request):
     item.save()
     return redirect('SalesReturn')
 
+
+
 def credit_note_count(request):
-    if request.user.is_company:
-      cmp = request.user.company
-    else:
-      cmp = request.user.employee.company
-    credit_notes = CreditNote.objects.filter(company=cmp)
-    count = credit_notes.count()
-    highest_entry_id = credit_notes.order_by('-id').first().id if count > 0 else None
-    return JsonResponse({'count': count, 'highestEntryID': highest_entry_id})
+    try:
+        if request.user.is_company:
+            cmp = request.user.company
+        else:
+            cmp = request.user.employee.company
+        
+        # Filter credit notes for the company
+        credit_notes = CreditNote.objects.filter(company=cmp)
+
+        # Count the number of credit notes
+        count = credit_notes.count()
+
+        # Return the count in the JSON response
+        return JsonResponse({'success': True, 'creditNoteCount': count})
+    
+    except ObjectDoesNotExist:
+        # Handle case where no credit notes exist for the company
+        return JsonResponse({'success': True, 'creditNoteCount': 0})
+    
+    except Exception as e:
+        # Handle other exceptions
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)

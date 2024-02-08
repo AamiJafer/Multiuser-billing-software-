@@ -145,7 +145,6 @@
                                         {% for party in parties %}
                                         <option value="{{ party.id }}" 
                                         data-phone="{{ party.contact }}" 
-                                        data-refnum="{{ party.refnum }}"
                                         data-invoiceno="{{ party.salesinvoice.invoice_no }}"
                                         data-invoicedate="{{ party.salesinvoice.date|date:'Y-m-d' }}"
                                         data-balance="{{party.openingbalance}}"
@@ -172,7 +171,7 @@
                         </div>
                         <div class="col-md-4">
                             <label for="validationDefaultUsername" class="form-label">Reference Number</label>
-                            <input type="text" class="form-control" id="" name="refnum">
+                            <input type="text" class="form-control" id="refnum" name="refnum">
                         </div>
                     </div>
                     <div class="row mt-3 partyon" style="display: block;">
@@ -683,6 +682,22 @@
 
 <script>
     $(document).ready(function () {
+        function getCreditNoteCount() {
+        $.ajax({
+            url: "{% url 'credit_note_count' %}",
+            success: function (response) {
+                var referenceNumber = response.creditNoteCount > 0 ? response.creditNoteCount + 1 : 1;
+                $('input[name="refnum"]').val(referenceNumber);
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching credit note count:", error);
+            }
+        });
+    }
+    
+    // Call the function to fetch credit note count when the document is ready
+    getCreditNoteCount();
+
         $('#party_name').select2();
         $('#item_name').select2();
         $('#balance').hide();
@@ -697,8 +712,6 @@
                 $('#placesupply').val(selectedParty.data('placesupply'));
                 $('#balance').val(selectedParty.data('balance'));
                 $('input[name="paymethod"]').val(selectedParty.data('paymethod'));
-                var referenceNumber = calculateReferenceNumber(selectedParty.data('refnum'));
-                $('input[name="refnum"]').val(referenceNumber);
             } else {
                 $('#balance').hide();
             }
@@ -795,13 +808,6 @@
             $('#itModal').modal('show');
         });
 
-        function calculateReferenceNumber(previousRefNum) {
-            if (!previousRefNum) {
-                return 1;
-            }
-
-            return parseInt(previousRefNum) + 1;
-        }
 
         $(document).on('click', '#unitmodalsubmit', function () {
             $.ajax({

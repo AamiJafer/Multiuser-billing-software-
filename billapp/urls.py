@@ -33,5 +33,5 @@ urlpatterns = [
     path('saveParty',views.saveParty,name="saveParty"),
     path('saveItem',views.saveItem,name="saveItem"),
     path('create_unit',views.create_unit,name="create_unit"),
-    path('credit_note_count',views.credit_note_count,name="credit_note_count")
+    path('credit_note_count/',views.credit_note_count,name="credit_note_count")
 ]
