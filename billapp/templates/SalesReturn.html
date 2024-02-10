@@ -56,6 +56,32 @@
         display: none;
     }
 
+    .tabContainer .nav .nav-item button {
+    background-color: transparent;
+    color: #000; /* Change the color to your desired color */
+    border: none;
+    cursor: pointer;
+    }
+
+    .tabContainer .nav .nav-item button.active {
+    background-color: #68020F;
+    color: #fff;
+    }
+
+    .tabContainer2 .nav .nav-item button {
+    background-color: transparent;
+    color: #000; /* Change the color to your desired color */
+    border: none;
+    cursor: pointer;
+    }
+
+    .tabContainer2 .nav .nav-item button.active {
+    background-color: #68020F;
+    color: #fff;
+    }
+
+
+
     .myDropDown{
         flex: 1;
     }
@@ -171,7 +197,7 @@
                         </div>
                         <div class="col-md-4">
                             <label for="validationDefaultUsername" class="form-label">Reference Number</label>
-                            <input type="text" class="form-control" id="refnum" name="refnum">
+                            <input type="text" class="form-control" id="refnum" name="refnum" value="{{ reference_number }}">
                         </div>
                     </div>
                     <div class="row mt-3 partyon" style="display: block;">
@@ -190,11 +216,11 @@
                             <label for="validationDefaultUsername" class="form-label">Return Date</label>
                             <input type="date" class="form-control" id="returndate" name="returndate" value="{% now 'Y-m-d' %}">
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-4 partyon">
                             <label for="validationDefaultUsername" class="form-label">Place of Supply</label>
                             <input type="text" class="form-control" id="placesupply" name="placesupply">
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-4 partyon">
                             <label for="validationDefaultUsername" class="form-label">Payment method</label>
                             <input type="text" class="form-control" id="" name="paymethod">
                         </div>
@@ -408,7 +434,7 @@
                                         
                                                     <div class="col-md-12 d-flex justify-content-start mt-5">
 
-                                                        <button type="button" class="btn button_border me-3" onclick="showPanel(1)">NEXT</button>
+                                                        <button type="button" class="btn button_border me-3 next-btn" onclick="showPanel(1)">NEXT</button>
 
 
                                                     </div>
@@ -452,8 +478,8 @@
                                                     </div><br>
                                                     <div class="col-md-12 d-flex justify-content-start mt-3">
 
-                                                        <button type="button" class="btn button_border me-3" onclick="showPanel(0)">PREVIOUS</button>
-                                                        <button type="button" class="btn button_border me-3" onclick="showPanel(2)">NEXT</button>
+                                                        <button type="button" class="btn button_border me-3 prev-btn" onclick="showPanel(0)">PREVIOUS</button>
+                                                        <button type="button" class="btn button_border me-3 next-btn" onclick="showPanel(2)">NEXT</button>
 
                                                     </div>
                                                 </div>
@@ -480,7 +506,7 @@
                                                         </div>
                                                         <div class="col-md-12 d-flex justify-content-start mt-5">
 
-                                                            <button type="button" class="btn button_border me-3" onclick="showPanel(1)">PREVIOUS</button>
+                                                            <button type="button" class="btn button_border me-3 prev-btn" onclick="showPanel(1)">PREVIOUS</button>
                                                             <button type="submit" class="btn button_border me-3">SAVE</button>
     
                                                         </div>
@@ -600,7 +626,7 @@
                                                     </div>    
                                                     </div>
                                                     <div class="col-md-12 d-flex justify-content-start mt-5">
-                                                        <button type="button" class="btn button_border me-3" onclick="showPanel2(1)">NEXT</button>
+                                                        <button type="button" class="btn button_border me-3 next-btn-2" onclick="showPanel2(1)">NEXT</button>
                                                     </div>
                                                 </div>
 
@@ -629,7 +655,7 @@
                                                     </div>
                                                     <div class="col-md-12 d-flex justify-content-start mt-5">
 
-                                                        <button type="button" class="btn button_border me-3" onclick="showPanel2(0)">PREVIOUS</button>
+                                                        <button type="button" class="btn button_border me-3 prev-btn-2" onclick="showPanel2(0)">PREVIOUS</button>
                                                         <button type="submit" class="btn button_border me-3">SAVE</button>
 
                                                     </div>
@@ -682,22 +708,6 @@
 
 <script>
     $(document).ready(function () {
-        function getCreditNoteCount() {
-        $.ajax({
-            url: "{% url 'credit_note_count' %}",
-            success: function (response) {
-                var referenceNumber = response.creditNoteCount > 0 ? response.creditNoteCount + 1 : 1;
-                $('input[name="refnum"]').val(referenceNumber);
-            },
-            error: function (xhr, status, error) {
-                console.error("Error fetching credit note count:", error);
-            }
-        });
-    }
-    
-    // Call the function to fetch credit note count when the document is ready
-    getCreditNoteCount();
-
         $('#party_name').select2();
         $('#item_name').select2();
         $('#balance').hide();
@@ -752,11 +762,8 @@
         $(document).on('click', '.delete-row-button', function () {
             $(this).closest('tr').remove();
         });
-
-        // Store the default options of the item name select element
         var defaultItemOptions = $('#item_name option:not([disabled])').clone();
 
-        // Function to add new row
         function addNewRow() {
             var serialNumber = $('.table tbody tr').length + 1;
 
@@ -868,38 +875,66 @@
             });
         });
 
-        var tabButtons=document.querySelectorAll(".tabContainer .nav .nav-item button");
-        var tabPanels=document.querySelectorAll(".tabContainer .tab-pane");
+        function showPanel(panelIndex) {
+        var tabButtons = document.querySelectorAll(".tabContainer .nav .nav-item button");
+        var tabPanels = document.querySelectorAll(".tabContainer .tab-pane");
 
-        function showPanel(panelIndex){
-            tabButtons.forEach(function(node){
-                node.style.backgroundColor="";
-                node.style.color="";
-            });
-            tabButtons[panelIndex].style.backgroundColor= "#68020F";
-            tabButtons[panelIndex].style.color= "white";
-            tabPanels.forEach(function(node){
-                node.style.display="none";
-            });
-            tabPanels[panelIndex].style.display="block";
+        tabPanels.forEach(function(panel) {
+            panel.style.display = "none";
+        });
+        tabButtons.forEach(function(button) {
+            button.classList.remove("active");
+        });
+
+        tabPanels[panelIndex].style.display = "block";
+
+        tabButtons[panelIndex].classList.add("active");
         }
+
+        $(".tabContainer .nav .nav-item button").on("click", function() {
+            var tabIndex = $(this).parent().index();
+            showPanel(tabIndex);
+        });
+        $(".next-btn").on("click", function() {
+            var currentPanel = $(".tabContainer .nav .nav-item button.active").parent().index();
+            showPanel(currentPanel + 1);
+        });
+        $(".prev-btn").on("click", function() {
+            var currentPanel = $(".tabContainer .nav .nav-item button.active").parent().index();
+            showPanel(currentPanel - 1);
+        });
+
         showPanel(0);
 
-        var tabButtons2=document.querySelectorAll(".tabContainer2 .nav .nav-item button");
-        var tabPanels2=document.querySelectorAll(".tabContainer2 .tab-pane");
+        function showPanel2(panelIndex) {
+        var tabButtons2 = document.querySelectorAll(".tabContainer2 .nav .nav-item button");
+        var tabPanels2 = document.querySelectorAll(".tabContainer2 .tab-pane");
 
-        function showPanel2(panelIndex){
-            tabButtons2.forEach(function(node){
-                node.style.backgroundColor="";
-                node.style.color="";
-            });
-            tabButtons2[panelIndex].style.backgroundColor= "#68020F";
-            tabButtons2[panelIndex].style.color= "white";
-            tabPanels2.forEach(function(node){
-                node.style.display="none";
-            });
-            tabPanels2[panelIndex].style.display="block";
+        tabPanels2.forEach(function(panel) {
+            panel.style.display = "none";
+        });
+        tabButtons2.forEach(function(button) {
+            button.classList.remove("active");
+        });
+
+        tabPanels2[panelIndex].style.display = "block";
+
+        tabButtons2[panelIndex].classList.add("active");
         }
+
+        $(".tabContainer2 .nav .nav-item button").on("click", function() {
+            var tabIndex = $(this).parent().index();
+            showPanel2(tabIndex);
+        });
+        $(".next-btn-2").on("click", function() {
+            var currentPanel = $(".tabContainer2 .nav .nav-item button.active").parent().index();
+            showPanel2(currentPanel + 1);
+        });
+        $(".prev-btn-2").on("click", function() {
+            var currentPanel = $(".tabContainer2 .nav .nav-item button.active").parent().index();
+            showPanel2(currentPanel - 1);
+        });
+
         showPanel2(0);
 
         function calculateTotal(row) {

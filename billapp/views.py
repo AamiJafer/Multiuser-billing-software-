@@ -12,6 +12,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Max
 
 def home(request):
   return render(request, 'home.html')
@@ -332,20 +333,25 @@ def reject_staff(request,id):
   messages.info(request,'Employee Deleted !!')
   return redirect('load_staff_request')
 
-def CreditNote(request):
+def creditnote(request):
   usr=request.user
   return render(request,'CreditNote.html',{'usr':usr})
 
 def SalesReturn(request):
-  if request.user.is_company:
-      cmp = request.user.company
-  else:
-      cmp = request.user.employee.company      
-  parties = Party.objects.filter(company=cmp)
-  items = Item.objects.filter(company=cmp)
-  unit=Unit.objects.filter(company=cmp)
-  context = {'usr':request.user, 'parties':parties, 'items':items,'unit':unit,'cmp':cmp}
-  return render(request,'SalesReturn.html',context)
+    print("Request user:", request.user)
+    if request.user.is_company:
+        cmp = request.user.company
+    else:
+        cmp = request.user.employee.company
+    print("Company:", cmp)
+    parties = Party.objects.filter(company=cmp)
+    items = Item.objects.filter(company=cmp)
+    unit = Unit.objects.filter(company=cmp)
+    max_reference_number = CreditNote.objects.filter(company=cmp).aggregate(Max('reference_no'))['reference_no__max']
+    reference_number = max_reference_number + 1 if max_reference_number is not None else 1
+    print("Reference number:", reference_number)
+    context = {'usr':request.user, 'parties':parties, 'items':items,'unit':unit,'cmp':cmp,'reference_number': reference_number}
+    return render(request,'SalesReturn.html',context)
 
 def saveParty(request):
     if request.user.is_authenticated:
@@ -442,29 +448,23 @@ def saveItem(request):
           )
     item.save()
     return redirect('SalesReturn')
-
-
-
-def credit_note_count(request):
-    try:
-        if request.user.is_company:
-            cmp = request.user.company
-        else:
-            cmp = request.user.employee.company
-        
-        # Filter credit notes for the company
-        credit_notes = CreditNote.objects.filter(company=cmp)
-
-        # Count the number of credit notes
-        count = credit_notes.count()
-
-        # Return the count in the JSON response
-        return JsonResponse({'success': True, 'creditNoteCount': count})
+  
+def saveCreditnote(request):
+  if request.method == 'POST':
+    if request.user.is_company:
+      cmp = request.user.company
+    else:
+      cmp = request.user.employee.company
+    usr = CustomUser.objects.get(username=request.user)
+    party=request.POST['partystatus']
+    if party:
+      party_name=request.POST['']
+      phone=request.POST['']
+      invoice_no=request.POST['']
+      invoice_date=request.POST['']
+      pos=request.POST['']
+      payment_method=request.POST['']
+    return_date=request.POST['']
+    reference_no=request.POST['']
     
-    except ObjectDoesNotExist:
-        # Handle case where no credit notes exist for the company
-        return JsonResponse({'success': True, 'creditNoteCount': 0})
     
-    except Exception as e:
-        # Handle other exceptions
-        return JsonResponse({'success': False, 'error': str(e)}, status=500)

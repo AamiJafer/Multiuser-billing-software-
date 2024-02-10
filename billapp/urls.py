@@ -28,10 +28,9 @@ urlpatterns = [
     path('load_staff_list/',views.load_staff_list,name='load_staff_list'),  
     path('accept_staff/<int:id>',views.accept_staff,name='accept_staff'),  
     path('reject_staff/<int:id>',views.reject_staff,name='reject_staff'),  
-    path('CreditNote/',views.CreditNote,name="CreditNote"),
+    path('creditnote/',views.creditnote,name="creditnote"),
     path('SalesReturn/',views.SalesReturn,name="SalesReturn"),
     path('saveParty',views.saveParty,name="saveParty"),
     path('saveItem',views.saveItem,name="saveItem"),
-    path('create_unit',views.create_unit,name="create_unit"),
-    path('credit_note_count/',views.credit_note_count,name="credit_note_count")
+    path('create_unit',views.create_unit,name="create_unit")
 ]

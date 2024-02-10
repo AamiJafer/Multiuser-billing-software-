@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
 
 class CustomUser(AbstractUser):
     is_company = models.BooleanField(default=0)
@@ -115,9 +116,23 @@ class SalesInvoice(models.Model):
 class CreditNote(models.Model):
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,null=True,blank=True)
     company = models.ForeignKey(Company,on_delete= models.CASCADE,null=True,blank=True)
-    party = models.OneToOneField(Party,on_delete=models.CASCADE,null=True,blank=True)
-    salesinvoice=models.ForeignKey(SalesInvoice,on_delete=models.CASCADE,null=True,blank=True)
-    reference_no=models.IntegerField(null=True,default="1")
-    item=models.ForeignKey(ItemTransactions,on_delete=models.CASCADE,null=True,blank=True)
+    salesivoice = models.OneToOneField(SalesInvoice,on_delete=models.CASCADE,null=True,blank=True)
+    reference_no=models.IntegerField(null=True,default="0")
     returndate=models.DateField()
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    vat = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    adjustment = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    grandtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+
+class CreditNoteItem(models.Model):
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,null=True,blank=True)
+    credit_note = models.ForeignKey(CreditNote, related_name='items', on_delete=models.CASCADE)
+    item = models.CharField(max_length=255)
+    hsn = models.CharField(max_length=100, blank=True)
+    quantity = models.IntegerField(default=0)
+    tax = models.CharField(max_length=100, blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     
