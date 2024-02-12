@@ -116,7 +116,9 @@ class SalesInvoice(models.Model):
 class CreditNote(models.Model):
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,null=True,blank=True)
     company = models.ForeignKey(Company,on_delete= models.CASCADE,null=True,blank=True)
-    salesivoice = models.OneToOneField(SalesInvoice,on_delete=models.CASCADE,null=True,blank=True)
+    party=models.ForeignKey(Party,on_delete= models.CASCADE,null=True,blank=True)
+    salesinvoice_no= models.CharField(max_length=255,null=True,blank=True)
+    salesinvoice_date= models.DateField(null=True)
     reference_no=models.IntegerField(null=True,default="0")
     returndate=models.DateField()
     subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0)

@@ -155,11 +155,11 @@
                                 <label style="user-select: none;" class="fs-4 tb" for="partyRadio">
                                     Party OFF
                                 </label>
-                                <input class="me-1" type="radio" name="partystatus" id="partyoffRadio" value="partyoff">
+                                <input class="me-1" type="radio" name="partystatus" id="partyoffRadio" value="partyoff" required>
                             </div>
                         </div><br>  
                     </div>
-                <form class="row g-3 " method="post">
+                <form class="row g-3 " method="post" action="{% url 'saveCreditnote' %}">
                     {% csrf_token %}
                     <div class="row mt-5">
                         <div class="col-md-4 partyon">
@@ -285,7 +285,7 @@
                                     </button>
                         </div>
                     </div>
-
+                    <input type="text" id="total_items" name="total_items" value="{{ total_items }}" hidden>
                     <div class="row p-5 g-3" style="width: 450px; border:1px solid #68020F;margin-left: 10px;">
                         <div class="row">
                             <div class="col-md-6">
@@ -355,6 +355,7 @@
                                     <div class="container-fluid">
                                         <form id="unitmodalform" action="{% url 'saveParty' %}" method="post" enctype="multipart/form-data">
                                             {% csrf_token %}
+
                                             <div class="form-group row">
                                                 <div class="col-md-4">
                                                         <label for="party_name" class="col-form-label">PARTY
@@ -538,6 +539,7 @@
                                     <div class="container-fluid">
                                         <form id="itmodalform" action="{% url 'saveItem' %}" method="post" enctype="multipart/form-data">
                                             {% csrf_token %}
+
                                             <div class="form-group row">
                                                 <div class="d-flex">
                                                     <div class="pt-3 w-50">
@@ -757,10 +759,12 @@
 
         $('.add-row-button').on('click', function () {
             addNewRow();
+            
         });
 
         $(document).on('click', '.delete-row-button', function () {
             $(this).closest('tr').remove();
+            updateTotalItems();
         });
         var defaultItemOptions = $('#item_name option:not([disabled])').clone();
 
@@ -801,6 +805,12 @@
             
             $('#item_name_' + serialNumber).append(defaultItemOptions.clone());
             initializeSelect2ForItemName(serialNumber);
+            updateTotalItems();
+        }
+
+        function updateTotalItems() {
+            var totalItems = $('.table tbody tr').length;
+            $('#total_items').val(totalItems);
         }
 
         function initializeSelect2ForItemName(id) {

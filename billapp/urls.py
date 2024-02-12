@@ -32,5 +32,6 @@ urlpatterns = [
     path('SalesReturn/',views.SalesReturn,name="SalesReturn"),
     path('saveParty',views.saveParty,name="saveParty"),
     path('saveItem',views.saveItem,name="saveItem"),
-    path('create_unit',views.create_unit,name="create_unit")
+    path('create_unit',views.create_unit,name="create_unit"),
+    path('saveCreditnote',views.saveCreditnote,name="saveCreditnote")
 ]

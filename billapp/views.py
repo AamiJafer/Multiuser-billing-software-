@@ -456,15 +456,47 @@ def saveCreditnote(request):
     else:
       cmp = request.user.employee.company
     usr = CustomUser.objects.get(username=request.user)
-    party=request.POST['partystatus']
-    if party:
-      party_name=request.POST['']
-      phone=request.POST['']
-      invoice_no=request.POST['']
-      invoice_date=request.POST['']
-      pos=request.POST['']
-      payment_method=request.POST['']
-    return_date=request.POST['']
-    reference_no=request.POST['']
+    return_date=request.POST['returndate']
+    reference_no=request.POST['refnum']
+    subtotal=request.POST['subtotal']
+    vat=request.POST['disvatper']
+    adjustment=request.POST['adjustment']
+    grandtotal=request.POST['grandTotal']
+    party_status = request.POST.get('partystatus', '')
+    creditnote = CreditNote.objects.create(user=usr, company=cmp,reference_no=reference_no, returndate=return_date, subtotal=subtotal, vat=vat, adjustment=adjustment, grandtotal=grandtotal)
+    if party_status=='partyon':
+      party_id = request.POST.get('party_name', '')
+      party = Party.objects.get(pk=party_id)
+      sales_invoiceno = request.POST['invoiceno']
+      invoicedate=request.POST['invoicedate']
+      creditnote.salesinvoice_no=sales_invoiceno
+      creditnote.salesinvoice_date=invoicedate
+      creditnote.save()
+    total_items = request.POST.get('total_items', '')
+    print("Total items:",total_items)
+    if total_items.isdigit() and int(total_items) > 0:      
+      for i in range(1, int(total_items) + 1):
+        item_id = request.POST.get(f'item_name_{i}')
+        print("Item ID:", item_id)
+        item = Item.objects.get(id=item_id)
+        quantity = request.POST[f'quantity_{i}']
+        discount = request.POST[f'discount_{i}']
+        total = request.POST[f'total_{i}']
+        credit_note_item=CreditNoteItem.objects.create(user=usr,
+                                                      credit_note=creditnote,
+                                                      item=item.itm_name,
+                                                      hsn=item.itm_hsn,
+                                                      price=item.itm_sale_price,
+                                                      tax=item.itm_vat,
+                                                      quantity=quantity,
+                                                      discount=discount,
+                                                      total=total)
+        credit_note_item.save()
+    return redirect('SalesReturn')
+
+
+
+    
+
     
     
