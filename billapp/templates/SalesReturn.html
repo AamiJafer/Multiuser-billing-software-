@@ -710,6 +710,7 @@
 
 <script>
     $(document).ready(function () {
+        
         $('#party_name').select2();
         $('#item_name').select2();
         $('#balance').hide();
@@ -810,6 +811,9 @@
 
         function updateTotalItems() {
             var totalItems = $('.table tbody tr').length;
+            if (totalItems === 0) {
+                totalItems = 1;
+            }
             $('#total_items').val(totalItems);
         }
 
