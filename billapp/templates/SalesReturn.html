@@ -166,16 +166,13 @@
                             <label for="" class="form-label">Party Name</label>
                             <div style="display: flex;">
                                 <div class="myDropDown">
-                                    <select id="party_name" class="form-control" name="party_name">      
+                                    <select id="party_details" class="form-control" name="party_details">      
                                         <option value="" selected disabled>Select a party name</option>
                                         {% for party in parties %}
-                                        <option value="{{ party.id }}" 
-                                        data-phone="{{ party.contact }}" 
-                                        data-invoiceno="{{ party.salesinvoice.invoice_no }}"
-                                        data-invoicedate="{{ party.salesinvoice.date|date:'Y-m-d' }}"
-                                        data-balance="{{party.openingbalance}}"
-                                        data-placesupply="{{ party.salesinvoice.address }}"
-                                        data-paymethod="{{ party.payment }}">{{ party.party_name }}</option>
+                                        <option value="{{ party.id }} {{ party.contact }} {{ party.salesinvoice.invoice_no }}
+                                        {{ party.salesinvoice.date|date:'Y-m-d' }}
+                                        {{party.openingbalance}} {{ party.salesinvoice.address }} {{ party.payment }}">
+                                        {{ party.party_name }}</option>
                                         {% endfor %}            
                                     </select>
                                 </div>
@@ -222,7 +219,7 @@
                         </div>
                         <div class="col-md-4 partyon">
                             <label for="validationDefaultUsername" class="form-label">Payment method</label>
-                            <input type="text" class="form-control" id="" name="paymethod">
+                            <input type="text" class="form-control" id="paymethod" name="paymethod">
                         </div>
                     </div>
                     <div class="table-responsive">
@@ -246,13 +243,10 @@
                                     <td class="p-3">
                                         <div style="display: flex;">
                                             <div class="myDropDown">
-                                                <select id="item_name" class="form-control" name="item_name">      
-                                                    <option value="" selected disabled>Select Item</option>
+                                                <select id="item_name" class="form-control" name="item_name" required>      
+                                                    <option selected disabled>Select Item</option>
                                                     {% for item in items %}
-                                                    <option value="{{ item.id }}" 
-                                                    data-hsn="{{ item.itm_hsn }}" 
-                                                    data-price="{{ item.itm_sale_price }}"
-                                                    data-tax="{{ item.itm_vat }}">{{ item.itm_name }}</option>
+                                                    <option value="{{ item.id }} {{ item.itm_hsn }} {{ item.itm_sale_price }} {{ item.itm_vat }}">{{ item.itm_name }}</option>
                                                     {% endfor %}            
                                                 </select>
                                             </div>
@@ -353,26 +347,26 @@
                             <div class="container">
                                 <div class="modal-body mb-1 pb-1">
                                     <div class="container-fluid">
-                                        <form id="unitmodalform" action="{% url 'saveParty' %}" method="post" enctype="multipart/form-data">
+                                        <form id="unitmodalform" action="" method="post">
                                             {% csrf_token %}
 
                                             <div class="form-group row">
                                                 <div class="col-md-4">
                                                         <label for="party_name" class="col-form-label">PARTY
                                                             NAME</label>
-                                                        <input type="text" class="form-control" id=""
+                                                        <input type="text" class="form-control" id="party_name"
                                                             placeholder="Enter Party Name" name='party_name'>
                                                 </div>
                                                 <div class="col-md-4">
                                                         <label for="party_address"
                                                             class="col-form-label">GSTIN</label>
-                                                        <input type="text" class="form-control" id=""
+                                                        <input type="text" class="form-control" id="gst_no"
                                                             placeholder="29APPCK7465F1Z1"
                                                             name='gst_no'>
                                                 </div>
                                                 <div class="col-md-4">
                                                         <label for="party_name" class="col-form-label">MOBILE</label>
-                                                        <input type="text" class="form-control" id=""
+                                                        <input type="text" class="form-control" id="party_num"
                                                             placeholder="Enter Mobile Number"
                                                              name='party_num'>
                                                 </div>
@@ -411,13 +405,13 @@
                                                             </div><br>
                                                             <div>
                                                                 <label for="state" class="col-form-label">Supply State</label>
-                                                                <input type="text" class="form-control" id=""
+                                                                <input type="text" class="form-control" id="supp_state"
                                                                     placeholder="Enter State"
                                                                     name='supp_state'>
                                                             </div><br>
                                                             <div>
                                                                 <label for="email" class="col-form-label">Email</label>
-                                                                <input type="email" class="form-control" id=""
+                                                                <input type="email" class="form-control" id="email"
                                                                     placeholder="Enter EmailId"
                                                                     name='email'>
                                                             </div>
@@ -425,7 +419,7 @@
                                                         <div class="col-md-6">
                                                             <div>
                                                                 <label for="address" class="col-form-label">Billing Address</label>
-                                                                <textarea class="form-control" id="" placeholder="Enter Party Address"
+                                                                <textarea class="form-control" id="party_addr" placeholder="Enter Party Address"
                                                                     rows="6" name="party_addr"></textarea>
                                                             
 
@@ -458,13 +452,13 @@
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             
-                                                            <input type="number" class="form-control" id=""
+                                                            <input type="number" class="form-control" id="creditamt"
                                                                 placeholder=""
                                                                 style="margin-top: 40px;" name='creditamt'>
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label for="creditLimit" class="col-form-label">Credit Limit</label>
-                                                            <input type="number" class="form-control" id=""
+                                                            <input type="number" class="form-control" id="crLimit"
                                                                 placeholder=""
                                                                 name='crLimit'>
                                                         </div>
@@ -472,7 +466,7 @@
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <label for="date" class="col-form-label">Date</label>
-                                                            <input type="date" class="form-control" id=""
+                                                            <input type="date" class="form-control" id="credit_date"
                                                                 placeholder=""
                                                                 name='credit_date'>
                                                         </div>
@@ -489,26 +483,26 @@
                                                     <div class="row">
                                                         <div class="col-md-4">
                                                             <label for="add1" class="col-form-label">Additional Field1</label>
-                                                            <input type="text" class="form-control" id=""
+                                                            <input type="text" class="form-control" id="addField1"
                                                                 placeholder=""
                                                                 name='addField1'>
                                                         </div>
                                                         <div class="col-md-4">
                                                             <label for="add2" class="col-form-label">Additional Field2</label>
-                                                            <input type="text" class="form-control" id=""
+                                                            <input type="text" class="form-control" id="addField2"
                                                                 placeholder=""
                                                                 name='addField2'>
                                                         </div>
                                                         <div class="col-md-4">
                                                             <label for="add3" class="col-form-label">Additional Field3</label>
-                                                            <input type="text" class="form-control" id=""
+                                                            <input type="text" class="form-control" id="addField3"
                                                                 placeholder=""
                                                                 name='addField3'>
                                                         </div>
                                                         <div class="col-md-12 d-flex justify-content-start mt-5">
 
                                                             <button type="button" class="btn button_border me-3 prev-btn" onclick="showPanel(1)">PREVIOUS</button>
-                                                            <button type="submit" class="btn button_border me-3">SAVE</button>
+                                                            <button type="submit" class="btn button_border me-3" data-dismiss="modal" id="saveparty">SAVE</button>
     
                                                         </div>
 
@@ -537,7 +531,7 @@
                             <div class="container">
                                 <div class="modal-body mb-1 pb-1">
                                     <div class="container-fluid">
-                                        <form id="itmodalform" action="{% url 'saveItem' %}" method="post" enctype="multipart/form-data">
+                                        <form id="itmodalform" action="" method="post">
                                             {% csrf_token %}
 
                                             <div class="form-group row">
@@ -551,12 +545,12 @@
                                                     </div>
                                                     <div class="mb-3 w-50">
                                                       <label class="fw-bold tb fs-3" for="">NAME</label><br>
-                                                      <input style="color: black;" class="form-control mt-2 input_border text-black" type="text" placeholder="Enter Item Name" autocomplete="off" name="name" >
+                                                      <input style="color: black;" class="form-control mt-2 input_border text-black" type="text" placeholder="Enter Item Name" autocomplete="off" name="name" id="name">
                                                     </div>
                                                   </div>
                                                 <div class="col-md-6">
                                                     <label for="item_hsn" class="col-form-label">ITEM HSN</label>
-                                                    <input type="number" class="form-control" id="" name='item_hsn'>
+                                                    <input type="number" class="form-control" id="item_hsn" name='item_hsn'>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label class="col-form-label" for="item_unit">UNIT</label>
@@ -607,7 +601,7 @@
                                           
                                                               <div id="vatdiv" class="mb-2 pt-3" hidden>
                                                                   <label class="fw-bold tb fs-3" for="">VAT</label><br>
-                                                                  <input type="text" class="form-control mt-1 input_border text-black" name="vat" id='vat'>
+                                                                  <input type="text" class="form-control mt-1 input_border text-black" name="vat" id="vat">
                                                               </div>
                                                         </div><br>  
                                                     </div>
@@ -616,13 +610,13 @@
                                                         <div class="col-md-6">
                                                             <div>
                                                                 <label for="saleprice" class="col-form-label">SALES PRICE</label>
-                                                                <input type="number" class="form-control" id="" name='item_slprice'>
+                                                                <input type="number" class="form-control" id="item_slprice" name='item_slprice'>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
                                                             <div>
                                                                 <label for="purchase" class="col-form-label">PURCHASE PRICE</label>
-                                                                <input type="number" class="form-control" id="" name='item_prprice'>
+                                                                <input type="number" class="form-control" id="item_prprice" name='item_prprice'>
                                                             </div>
                                                         </div>
                                                     </div>    
@@ -637,13 +631,13 @@
                                                         <div class="col-md-6">
                                                             <div>
                                                                 <label for="opstock" class="col-form-label">OPENING STOCK</label>
-                                                                <input type="number" class="form-control" id="" name='item_opstock'>
+                                                                <input type="number" class="form-control" id="item_opstock" name='item_opstock'>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
                                                             <div>
                                                                 <label for="atprice" class="col-form-label">AT PRICE</label>
-                                                                <input type="number" class="form-control" id="" name='item_atprice'>
+                                                                <input type="number" class="form-control" id="item_atprice" name='item_atprice'>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -651,14 +645,14 @@
                                                         <div class="col-md-6">
                                                             <div>
                                                                 <label for="stdate" class="col-form-label">DATE</label>
-                                                                <input type="date" class="form-control" id="" name='item_stdate' value="{% now 'Y-m-d' %}">
+                                                                <input type="date" class="form-control" id="item_stdate" name='item_stdate' value="{% now 'Y-m-d' %}">
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-12 d-flex justify-content-start mt-5">
 
                                                         <button type="button" class="btn button_border me-3 prev-btn-2" onclick="showPanel2(0)">PREVIOUS</button>
-                                                        <button type="submit" class="btn button_border me-3">SAVE</button>
+                                                        <button type="submit" class="btn button_border me-3" data-dismiss="modal" id="itemSave">SAVE</button>
 
                                                     </div>
                                                 </div>
@@ -711,23 +705,75 @@
 <script>
     $(document).ready(function () {
         
-        $('#party_name').select2();
+        $('#party_details').select2();
         $('#item_name').select2();
         $('#balance').hide();
-        $('#party_name').on('change', function () {
-            var selectedParty = $(this).find(':selected');
 
-            if (selectedParty.length) {
-                $('#balance').text('Available Balance: ' + selectedParty.data('balance')).show();
-                $('#party_phone').val(selectedParty.data('phone'));
-                $('#invoiceno').val(selectedParty.data('invoiceno'));
-                $('#invoicedate').val(selectedParty.data('invoicedate'));
-                $('#placesupply').val(selectedParty.data('placesupply'));
-                $('#balance').val(selectedParty.data('balance'));
-                $('input[name="paymethod"]').val(selectedParty.data('paymethod'));
-            } else {
-                $('#balance').hide();
-            }
+        $(document).on("click","#saveparty",function(){
+            $.ajax({
+                type:"POST",
+                url:"{% url 'saveParty' %}",
+                data:{
+                    party_name:$("#party_name").val(),
+                    gst_no:$("#gst_no").val(),
+                    mob:$("#party_num").val(),
+                    gsttype:$("#gsttype").val(),
+                    state:$("#supp_state").val(),
+                    email:$("#email").val(),
+                    addr:$("#party_addr").val(),
+                    opbal:$("#creditamt").val(),
+                    cr_limit:$("#crLimit").val(),
+                    date:$("#credit_date").val(),
+                    add1:$("#addField1").val(),
+                    add2:$("#addField2").val(),
+                    add3:$("#addField3").val(),
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response){
+                    document.getElementById("unitmodalform").reset();
+                    reloadParty();
+                },
+            });
+        });
+
+        function reloadParty(){
+            $.ajax({
+                url: "{% url 'party_dropdown' %}",
+                type: "GET",
+                dataType: "json",
+                data: $(this).serialize(),
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                success: function(data){
+                    var dropdown = $("#party_details");
+                    dropdown.empty();
+                    dropdown.append(`<option selected>Select Party</option>`);
+                    $.each(data,function(key,value){
+                        dropdown.append($('<option></option>').attr('value', key).text(value[1] + " " +value[2] + " "+ value[3]+ " " +value[4] + " "+ value[5] + " " + value[6]+ " " + value[7]).val(value[0] + " " +value[2] + " "+ value[3]+ " " +value[4] + " "+ value[5] + " " + value[6]+ " " + value[7]));
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+        }
+
+        $('#party_details').change(function() {
+            $.ajax({
+                url: "{% url 'get_partydetails' %}",
+                data: { 
+                    id:$('#party_details').val(),
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                },
+                type: 'POST',
+                success: function(data){
+                    $('#balance').val(" "+data.balance).show();
+                    $('#party_phone').val(""+data.phone);
+                    $('#invoiceno').val(""+data.invoiceno);
+                    $('#invoicedate').val(""+data.invoicedate);
+                    $('#placesupply').val(""+data.placeofsupply);
+                    $('#paymethod').val(""+data.payment);
+                }
+            });
         });
 
         var partyonRadio = document.getElementById('partyonRadio');
@@ -745,18 +791,6 @@
         partyoffRadio.addEventListener('change', togglepartyonFields);
 
         togglepartyonFields();
-
-        $(document).on('change', 'select[name="item_name"]', function () {
-            var selectedItem = $(this).find(':selected');
-            var parentRow = $(this).closest('tr');
-
-            if (selectedItem.length) {
-                parentRow.find('input[name="hsn"]').val(selectedItem.data('hsn'));
-                parentRow.find('input[name="qty"]').val(selectedItem.data('qty'));
-                parentRow.find('input[name="price"]').val(selectedItem.data('price'));
-                parentRow.find('input[name="tax"]').val(selectedItem.data('tax'));
-            }
-        });
 
         $('.add-row-button').on('click', function () {
             addNewRow();
@@ -829,6 +863,69 @@
             $('#itModal').modal('show');
         });
 
+        $(document).on('click','#itemSave',function(){
+            $.ajax({
+                type:"POST",
+                url:"{% url 'saveItem' %}",
+                data:{
+                    item_type: $("#itm_type").val(),
+                    item_name: $("#name").val(),
+                    item_hsn:$("#item_hsn").val(),
+                    item_unit:$("#item_unit").val(),
+                    itm_taxable:$("#taxable_result").val(),
+                    itm_vat:$("#vat").val(),
+                    itm_sale_price:$("#item_slprice").val(),
+                    itm_purchase_price:$("#item_prprice").val(),
+                    itm_stock_in_hand:$("#item_opstock").val(),
+                    itm_at_price:$("#item_atprice").val(),
+                    itm_date:$("#item_stdate").val()
+                },
+                beforeSend: function(xhr, settings) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                success: function(response){
+                    documnet.getElementById("itmodal").reset();
+                    reloadItem();
+                },
+            });
+        });
+
+        function reloadItem() {
+            $.ajax({
+                url: "{% url 'item_dropdown' %}",
+                type: "GET",
+                dataType:"json",
+                data: $(this).serialize(),
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                success: function(data) {
+                    var dropdown = $('#party_name');
+                    dropdown.empty();
+                    dropdown.append(`<option selected>Select Item</option>`);
+                    $.each(data, function(key, value) {
+                        dropdown.append($('<option></option>').attr('value', key).text(value[1] + " " +value[2] + " "+ value[3] + " "+ value[4]).val(value[0] + " " +value[2] + " "+ value[3] + " "+  value[4]));
+                    });
+                },
+                error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+                }
+            });
+        }
+
+        $("#item_name").change(function(){
+            $.ajax({
+                url:"{% url 'get_itemdetails' %}",
+                data:{
+                    id:$('#item_name').val(),
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                },
+                type:'POST',
+                success: function(data) {
+                    $('#hsn').val(""+data.hsn);
+                    $('#price').val(""+data.price);
+                    $("#tax").val(""+data.tax);
+                }
+            });
+        });
 
         $(document).on('click', '#unitmodalsubmit', function () {
             $.ajax({

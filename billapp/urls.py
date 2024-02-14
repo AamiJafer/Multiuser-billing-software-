@@ -31,7 +31,11 @@ urlpatterns = [
     path('creditnote/',views.creditnote,name="creditnote"),
     path('SalesReturn/',views.SalesReturn,name="SalesReturn"),
     path('saveParty',views.saveParty,name="saveParty"),
+    path('party_dropdown',views.party_dropdown,name="party_dropdown"),
+    path('get_partydetails',views.get_partydetails,name="get_partydetails"),
     path('saveItem',views.saveItem,name="saveItem"),
+    path('item_dropdown',views.item_dropdown,name="item_dropdown"),
+    path('get_itemdetails',views.get_itemdetails,name="get_itemdetails"),
     path('create_unit',views.create_unit,name="create_unit"),
     path('saveCreditnote',views.saveCreditnote,name="saveCreditnote")
 ]

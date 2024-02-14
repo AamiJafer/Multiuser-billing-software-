@@ -395,8 +395,46 @@ def saveParty(request):
               additionalfield3=add3
           )
           party.save()
-          return redirect('SalesReturn')
+          print('Party created succefully ')
+          return HttpResponse({"message": "success"})
       
+def party_dropdown(request):
+  if request.user.is_company:
+      cmp = request.user.company
+  else:
+      cmp = request.user.employee.company  
+  options={}
+  option_objects=Party.objects.filter(company=cmp)
+  for option in option_objects:
+    options[option.id]=[option.id, option.party_name]
+  return JsonResponse(options)
+
+def get_partydetails(request):
+  if request.method == 'POST':
+    if request.user.is_company:
+        cmp = request.user.company
+    else:
+        cmp = request.user.employee.company  
+    party_id= request.POST.get('id').split(" ")[0]
+    party=Party.objects.get(company=cmp,id=party_id)
+    print(party.party_name)
+    sales_invoice = SalesInvoice.objects.filter(party=party).first()
+
+    balance=party.openingbalance
+    phone=party.contact
+    payment = party.payment
+    if sales_invoice:
+      invoiceno = sales_invoice.invoice_no
+      print(invoiceno)
+      invoicedate = sales_invoice.date
+      placeofsupply = sales_invoice.address
+    else:
+      invoiceno = None
+      invoicedate = None
+      placeofsupply = None
+
+    return JsonResponse({'balance':balance,'phone':phone,'invoiceno':invoiceno,'invoicedate':invoicedate,'placeofsupply':placeofsupply,'payment':payment})
+
 @csrf_exempt
 def create_unit(request):
   if request.method == 'POST':
@@ -420,17 +458,17 @@ def saveItem(request):
       cmp = request.user.employee.company  
     print(cmp)
     usr = CustomUser.objects.get(username=request.user)
-    item_type=request.POST['itm_type']
-    item_name=request.POST['name']
+    item_type=request.POST['item_type']
+    item_name=request.POST['item_name']
     item_hsn=request.POST['item_hsn']
     item_unit=request.POST['item_unit']
-    itm_taxable=request.POST['taxable_result']
-    itm_vat=request.POST['vat']
-    itm_sale_price=request.POST['item_slprice']
-    itm_purchase_price=request.POST['item_prprice']
-    itm_stock_in_hand=request.POST['item_opstock']
-    itm_at_price=request.POST['item_atprice']
-    itm_date=request.POST['item_stdate']
+    itm_taxable=request.POST['itm_taxable']
+    itm_vat=request.POST['itm_vat']
+    itm_sale_price=request.POST['itm_sale_price']
+    itm_purchase_price=request.POST['itm_purchase_price']
+    itm_stock_in_hand=request.POST['itm_stock_in_hand']
+    itm_at_price=request.POST['itm_at_price']
+    itm_date=request.POST['itm_date']
     item = Item(
               user=usr,
               company=cmp,
@@ -447,8 +485,33 @@ def saveItem(request):
               itm_date=itm_date
           )
     item.save()
-    return redirect('SalesReturn')
+    print("Item saved")
+    return HttpResponse({"message": "success"})
   
+def item_dropdown(request):
+  if request.user.is_company:
+      cmp = request.user.company
+  else:
+      cmp = request.user.employee.company  
+  options={}
+  option_objects=Item.objects.filter(company=cmp)
+  for option in option_objects:
+    options[option.id]=[option.id, option.itm_name]
+  return JsonResponse(options)
+    
+def get_itemdetails(request):
+  if request.user.is_company:
+      cmp = request.user.company
+  else:
+      cmp = request.user.employee.company  
+  item_id = request.POST.get('id').split(" ")[0]
+  item=Item.objects.get(company=cmp,id=item_id)
+  hsn=item.itm_hsn
+  price=item.itm_sale_price
+  tax=item.itm_vat
+  return JsonResponse({'hsn':hsn,'price':price,'tax':tax})
+
+
 def saveCreditnote(request):
   if request.method == 'POST':
     if request.user.is_company:
