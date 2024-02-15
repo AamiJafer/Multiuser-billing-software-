@@ -511,6 +511,31 @@ def get_itemdetails(request):
   tax=item.itm_vat
   return JsonResponse({'hsn':hsn,'price':price,'tax':tax})
 
+def fetch_item_details(request):
+  if request.method == 'GET':
+    if request.user.is_company:
+      cmp = request.user.company
+    else:
+      cmp = request.user.employee.company
+    item_id = request.GET.get('item_id')
+    item = Item.objects.get(pk=item_id,company=cmp)
+    data = {
+                'hsn': item.itm_hsn,
+                'price': item.itm_sale_price,
+                'tax': item.itm_vat
+            }
+    return JsonResponse(data)
+
+def get_item_dropdown(request):
+  if request.user.is_company:
+      cmp = request.user.company
+  else:
+      cmp = request.user.employee.company  
+  options={}
+  option_objects=Item.objects.filter(company=cmp)
+  for option in option_objects:
+    options[option.id]=[option.id, option.itm_name]
+  return JsonResponse(options)
 
 def saveCreditnote(request):
   if request.method == 'POST':
@@ -525,45 +550,45 @@ def saveCreditnote(request):
     vat=request.POST['disvatper']
     adjustment=request.POST['adjustment']
     grandtotal=request.POST['grandTotal']
-    party_status = request.POST.get('partystatus', '')
+    party_status = request.POST.get('partystatus')
+    print("Partystatus: ",party_status)
     creditnote = CreditNote.objects.create(user=usr, company=cmp,reference_no=reference_no, returndate=return_date, subtotal=subtotal, vat=vat, adjustment=adjustment, grandtotal=grandtotal)
     if party_status=='partyon':
-      party_id = request.POST.get('party_name', '')
+      party_details = request.POST.get('party_details')
+      party_id = party_details.split()[0]
       party = Party.objects.get(pk=party_id)
-      sales_invoiceno = request.POST['invoiceno']
-      invoicedate=request.POST['invoicedate']
-      creditnote.salesinvoice_no=sales_invoiceno
-      creditnote.salesinvoice_date=invoicedate
+      salesinvoice=SalesInvoice.objects.get(company=cmp,party=party)
+      print(party.party_name)
+      creditnote.party=party
+      creditnote.salesinvoice=salesinvoice
       creditnote.save()
-    total_items = request.POST.get('total_items', '')
-    print("Total items:",total_items)
-    if total_items.isdigit() and int(total_items) > 0:      
-      for i in range(1, total_items + 1):
-            item_name = request.POST.get(f'item_name_{i}')
-            hsn = request.POST.get(f'hsn_{i}')
-            quantity = request.POST.get(f'qty_{i}')
-            tax = request.POST.get(f'tax_{i}')
-            price = request.POST.get(f'price_{i}')
-            discount = request.POST.get(f'discount_{i}')
-            total = request.POST.get(f'total_{i}')
 
-            CreditNoteItem.objects.create(
-                user=request.user,
+    item_name = request.POST.getlist('item_name[]')
+    if not item_name:
+      print("No Items")
+      return HttpResponse("No item names provided", status=400)
+    quantity = request.POST.getlist("qty[]")
+    price = request.POST.getlist("price[]")
+    tax = request.POST.getlist("tax[]")
+    discount = request.POST.getlist("discount[]")
+    hsn = request.POST.getlist("hsn[]")
+    total = request.POST.getlist("total[]")
+    if len(item_name) == len(quantity) == len(price) == len(tax) == len(discount) == len(hsn) == len(total) and item_name and quantity and price and tax and discount and hsn and total:
+      mapped=zip(item_name,quantity,price,tax,discount,hsn,total)
+      mapped=list(mapped)
+      for ele in mapped:
+        it=Item.objects.get(user = request.user, id = ele[0]).itm_name
+        print("item_name:", it)
+
+        creditnoteitem=CreditNoteItem.objects.create(
+                user=usr,
                 credit_note=creditnote,
-                item=item_name,
-                hsn=hsn,
-                quantity=quantity,
-                tax=tax,
-                price=price,
-                discount=discount,
-                total=total
-            )
-            
-    return redirect('SalesReturn')
-
-
-
-    
-
-    
-    
+                item=it,
+                hsn=ele[5],
+                quantity=ele[1],
+                tax=ele[3],
+                price=ele[2],
+                discount=ele[4],
+                total=ele[6])
+      return redirect('SalesReturn')
+    return redirect('SalesReturn')  

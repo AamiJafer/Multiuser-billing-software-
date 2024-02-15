@@ -142,31 +142,32 @@
             <div class="card-body">
                 <h1 class="modal-title fs-5 p-1" id="exampleModalLabel"
                                     style="color: #68020F; font-weight: 900;">ADD CREDITNOTE</h1>
-                    <div class="form-group row">
+                <form class="row g-3 " method="post" action="{% url 'saveCreditnote' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group row g-3">
                         <div class="col-md-6" style="display: flex; margin-top: 10px; margin-left: 10px;">
+                            <input type="text" name="partystatus" id="partystatus" hidden>
                             <div class="form-check">  
                                 <label style="user-select: none;" class="fs-4 tb" for="partyRadio">
                                     Party ON
                                 </label>
-                                <input class="me-1" type="radio" name="partystatus" id="partyonRadio" value="partyon" required>
+                                <input class="me-1" type="radio" name="partyStatusGroup" id="partyonRadio" required>
                             </div>
                             <div class="form-check" style="margin-left: 30px;">
                                 
                                 <label style="user-select: none;" class="fs-4 tb" for="partyRadio">
                                     Party OFF
                                 </label>
-                                <input class="me-1" type="radio" name="partystatus" id="partyoffRadio" value="partyoff" required>
+                                <input class="me-1" type="radio" name="partyStatusGroup" id="partyoffRadio" required>
                             </div>
                         </div><br>  
                     </div>
-                <form class="row g-3 " method="post" action="{% url 'saveCreditnote' %}">
-                    {% csrf_token %}
-                    <div class="row mt-5">
-                        <div class="col-md-4 partyon">
+                    <div class="row mt-3">
+                        <div class="col-md-4 partyon" hidden>
                             <label for="" class="form-label">Party Name</label>
                             <div style="display: flex;">
                                 <div class="myDropDown">
-                                    <select id="party_details" class="form-control" name="party_details">      
+                                    <select id="party_details" class="form-control" name="party_details" style="width: 100%;">      
                                         <option value="" selected disabled>Select a party name</option>
                                         {% for party in parties %}
                                         <option value="{{ party.id }} {{ party.contact }} {{ party.salesinvoice.invoice_no }}
@@ -185,9 +186,9 @@
                                 </div>
                                 
                             </div>
-                            <span id="balance">Available Balance:</span>
+                            <div id="balance"></div>
                         </div>
-                        <div class="col-md-4 partyon">
+                        <div class="col-md-4 partyon" hidden>
                             <label for="" class="form-label">Phone Number</label>
                             <input type="text" class="form-control" id="party_phone" name="party_phone">
                             
@@ -197,7 +198,7 @@
                             <input type="text" class="form-control" id="refnum" name="refnum" value="{{ reference_number }}">
                         </div>
                     </div>
-                    <div class="row mt-3 partyon" style="display: block;">
+                    <div class="row mt-3 partyon" hidden>
                         <div class="col-md-4">
                             <label for="validationDefaultUsername" class="form-label">Invoice Number</label>
                             <input type="text" class="form-control" id="invoiceno" name="invoiceno">
@@ -213,11 +214,11 @@
                             <label for="validationDefaultUsername" class="form-label">Return Date</label>
                             <input type="date" class="form-control" id="returndate" name="returndate" value="{% now 'Y-m-d' %}">
                         </div>
-                        <div class="col-md-4 partyon">
+                        <div class="col-md-4 partyon" hidden>
                             <label for="validationDefaultUsername" class="form-label">Place of Supply</label>
                             <input type="text" class="form-control" id="placesupply" name="placesupply">
                         </div>
-                        <div class="col-md-4 partyon">
+                        <div class="col-md-4 partyon" hidden>
                             <label for="validationDefaultUsername" class="form-label">Payment method</label>
                             <input type="text" class="form-control" id="paymethod" name="paymethod">
                         </div>
@@ -279,7 +280,7 @@
                                     </button>
                         </div>
                     </div>
-                    <input type="text" id="total_items" name="total_items" value="{{ total_items }}" hidden>
+                    <input type="text" id="total_items" name="total_items" value="1" hidden>
                     <div class="row p-5 g-3" style="width: 450px; border:1px solid #68020F;margin-left: 10px;">
                         <div class="row">
                             <div class="col-md-6">
@@ -704,7 +705,7 @@
 
 <script>
     $(document).ready(function () {
-        
+        var serialNumber=1;
         $('#party_details').select2();
         $('#item_name').select2();
         $('#balance').hide();
@@ -766,7 +767,7 @@
                 },
                 type: 'POST',
                 success: function(data){
-                    $('#balance').val(" "+data.balance).show();
+                    $('#balance').text("Available Balance: " + data.balance).show();
                     $('#party_phone').val(""+data.phone);
                     $('#invoiceno').val(""+data.invoiceno);
                     $('#invoicedate').val(""+data.invoicedate);
@@ -776,21 +777,23 @@
             });
         });
 
-        var partyonRadio = document.getElementById('partyonRadio');
-        var partyoffRadio = document.getElementById('partyoffRadio');
-        var partyonFields = document.querySelectorAll('.partyon');
 
-        function togglepartyonFields() {
-            var displayValue = partyonRadio.checked ? 'block' : 'none';
-            partyonFields.forEach(function (field) {
-                field.style.display = displayValue;
-            });
-        }
 
-        partyonRadio.addEventListener('change', togglepartyonFields);
-        partyoffRadio.addEventListener('change', togglepartyonFields);
+        // var partyonRadio = document.getElementById('partyonRadio');
+        // var partyoffRadio = document.getElementById('partyoffRadio');
+        // var partyonFields = document.querySelectorAll('.partyon');
 
-        togglepartyonFields();
+        // function togglepartyonFields() {
+        //     var displayValue = partyonRadio.checked ? 'block' : 'none';
+        //     partyonFields.forEach(function (field) {
+        //         field.style.display = displayValue;
+        //     });
+        // }
+
+        // partyonRadio.addEventListener('change', togglepartyonFields);
+        // partyoffRadio.addEventListener('change', togglepartyonFields);
+
+        // togglepartyonFields();
 
         $('.add-row-button').on('click', function () {
             addNewRow();
@@ -837,17 +840,17 @@
             `;
 
             $('.table tbody').append(newRow);
+
+            console.log(defaultItemOptions);
+
             
             $('#item_name_' + serialNumber).append(defaultItemOptions.clone());
-            initializeSelect2ForItemName(serialNumber);
+            $('#item_name_' + serialNumber).select2();
             updateTotalItems();
         }
 
         function updateTotalItems() {
             var totalItems = $('.table tbody tr').length;
-            if (totalItems === 0) {
-                totalItems = 1;
-            }
             $('#total_items').val(totalItems);
         }
 
@@ -911,6 +914,29 @@
             });
         }
 
+        $(document).on('change', '[id^=item_name_]', function () {
+            var rowId = $(this).attr('id').split('_')[2]; // Extract the row number from the ID
+            var itemId = $(this).val(); // Get the selected item ID
+
+            // Make an AJAX request to fetch the item details
+            $.ajax({
+                url: "{% url 'get_itemdetails' %}",
+                data: {
+                    id: itemId,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                },
+                type: 'POST',
+                success: function (data) {
+                    // Update the corresponding input fields in the same row with fetched data
+                    $('#hsn_' + rowId).val(data.hsn);
+                    $('#price_' + rowId).val(data.price);
+                    $('#tax_' + rowId).val(data.tax);
+                    // You may add more fields here if needed
+                }
+            });
+        });
+
+
         $("#item_name").change(function(){
             $.ajax({
                 url:"{% url 'get_itemdetails' %}",
@@ -946,6 +972,20 @@
                     $('#itModal').modal('show');
                 },
             });
+        });
+
+        $(document).ready(function(){
+            $('#partyonRadio').on('click',function(){
+                $('#partystatus').val('partyon');
+                $('.partyon').removeAttr('hidden');
+            })
+        });
+        $(document).ready(function(){
+            $('#partyoffRadio').on('click',function(){
+                $('#partystatus').val('partyoff')
+                $('.partyon').attr('hidden', true);
+
+            })
         });
 
         $(document).ready(function(){

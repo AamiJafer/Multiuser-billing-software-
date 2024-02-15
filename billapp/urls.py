@@ -36,6 +36,10 @@ urlpatterns = [
     path('saveItem',views.saveItem,name="saveItem"),
     path('item_dropdown',views.item_dropdown,name="item_dropdown"),
     path('get_itemdetails',views.get_itemdetails,name="get_itemdetails"),
+    path('fetch_item_details',views.fetch_item_details,name="fetch_item_details"),
+    path('get_item_dropdown',views.get_item_dropdown,name="get_item_dropdown"),
+
+    
     path('create_unit',views.create_unit,name="create_unit"),
     path('saveCreditnote',views.saveCreditnote,name="saveCreditnote")
 ]
