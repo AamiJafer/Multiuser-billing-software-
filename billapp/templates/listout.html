@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block content %}
+<style>
+    .button_border {
+        border: 1px solid #68020F;
+        color: #68020F;
+    }
+
+    .button_border:hover {
+        background-color: #68020F;
+        color: white;
+    }
+    thead {
+        background-color: #68020F; 
+        color: #fff; 
+    }
+</style>
+<div class="body-wrapper">
+    <div class="container">
+        <br><br><br><br><br><br><br>
+        <div class="p-3 mb-5" style="border: 2px solid #68020F; border-radius: 2.5vh; background-color: #FFD6D7;">
+            <div class="mb-3 mb-sm-0">
+                <h1 class="modal-title fs-5 p-1" style="color: #68020F; font-weight: 900;">CREDITNOTE</h1>
+                <div class="d-flex mb-3">
+                    <div class="search-box me-auto p-2">
+                        <input type="text" id="searchInput" placeholder="Search...">
+                    </div>
+                    <div class="p-2">
+                        <button type="button" class="btn button_border me-3">+ Add Credit Note</button>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered table-sm mt-3" style="text-align: center;">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>DATE</th>
+                            <th>REFERENCE NUMBER</th>
+                            <th>PARTY NAME</th>
+                            <th>TYPE</th>
+                            <th>TOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                </table>
+            </div>
+        
+        </div>
+    </div>
+</div>
+{% endblock %}

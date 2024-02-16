@@ -43,6 +43,10 @@
         background-color: #68020F;
         color: white;
     }
+    .table{
+        border:1px solid #000;
+    }
+
     thead {
             background-color: #68020F; 
             color: #fff; 
@@ -244,7 +248,7 @@
                                     <td class="p-3">
                                         <div style="display: flex;">
                                             <div class="myDropDown">
-                                                <select id="item_name" class="form-control" name="item_name" required>      
+                                                <select id="item_name" class="form-control item-name" name="item_name" required>      
                                                     <option selected disabled>Select Item</option>
                                                     {% for item in items %}
                                                     <option value="{{ item.id }} {{ item.itm_hsn }} {{ item.itm_sale_price }} {{ item.itm_vat }}">{{ item.itm_name }}</option>
@@ -262,8 +266,8 @@
                                     <td class="p-3"><input type="text" class="form-control small-input hsn-input" id="hsn" name="hsn"></td>
                                     <td class="p-3"><input type="number" class="form-control small-input qty-input" id="qty" name="qty" value="0"></td>
                                     <td class="p-3"><input type="text" class="form-control small-input price-input" id="price" name="price" value="0"></td>
-                                    <td class="p-3"><input type="text" class="form-control small-input tax-input" id="tax" name="tax"></td>
-                                    <input type="text" class="form-control small-input vatper-input" id="vatper" name="vatper" hidden>
+                                    <td class="p-3"><input type="text" class="form-control small-input tax-input" id="tax" name="tax">
+                                    <input type="text" class="form-control small-input vatper-input" id="vatper" name="vatper" hidden></td>
                                     <td class="p-3"><input type="number" class="form-control small-input discount-input" id="discount" name="discount" value="0"></td>
                                     <td class="p-3"><input type="text" class="form-control small-input total-input" id="total" name="total" value="0"></td>
                                     <td class="p-3"><button type="button" class="btn button_border delete-row-button">
@@ -330,7 +334,7 @@
                     </div>
                     <div class="col-md-12 d-flex mt-3">
 
-                        <button type="button" class="btn button_border me-3">SAVE & NEW</button>
+                        <button type="submit" class="btn button_border me-3" name="save_new">SAVE & NEW</button>
                         <button type="submit" class="btn button_border me-3">SAVE</button>
 
                     </div>
@@ -705,7 +709,7 @@
 
 <script>
     $(document).ready(function () {
-        var serialNumber=1;
+        
         $('#party_details').select2();
         $('#item_name').select2();
         $('#balance').hide();
@@ -802,9 +806,15 @@
 
         $(document).on('click', '.delete-row-button', function () {
             $(this).closest('tr').remove();
+            var row=$(this).closest('tr');
+            calculateTotal(row);
+            calculatevatperc(row);
+            calculateSubtotal();
+            calculateTax();
+            calculateGrandtotal();
             updateTotalItems();
         });
-        var defaultItemOptions = $('#item_name option:not([disabled])').clone();
+        defaultItemOptions = $('#item_name option:not([disabled])').clone();
 
         function addNewRow() {
             var serialNumber = $('.table tbody tr').length + 1;
@@ -816,7 +826,7 @@
                         <div style="display: flex;">
                             <div class="myDropDown">
                                 <select id="item_name_${serialNumber}" class="form-control item-name" name="item_name">
-                                    <option value="" selected disabled>Select Item</option>
+                                    <option value="" selected disabled>Select Item</option> 
                                 </select>
                             </div>
                             <div class="btn-group" role="group" aria-label="Third group" style="margin-left: 5px;">
@@ -829,8 +839,8 @@
                     <td class="p-3"><input type="text" class="form-control small-input hsn-input" id="hsn_${serialNumber}" name="hsn"></td>
                     <td class="p-3"><input type="number" class="form-control small-input qty-input" id="qty_${serialNumber}" name="qty" value="0"></td>
                     <td class="p-3"><input type="text" class="form-control small-input price-input" id="price_${serialNumber}" name="price" value="0"></td>
-                    <td class="p-3"><input type="text" class="form-control small-input tax-input" id="tax_${serialNumber}" name="tax"></td>
-                    <input type="text" class="form-control small-input vatper-input" id="vatper_${serialNumber}" name="vatper" hidden>
+                    <td class="p-3"><input type="text" class="form-control small-input tax-input" id="tax_${serialNumber}" name="tax">
+                    <input type="text" class="form-control small-input vatper-input" id="vatper_${serialNumber}" name="vatper" hidden></td>
                     <td class="p-3"><input type="number" class="form-control small-input discount-input" id="discount_${serialNumber}" name="discount" value="0"></td>
                     <td class="p-3"><input type="text" class="form-control small-input total-input" id="total_${serialNumber}" name="total" value="0"></td>
                     <td class="p-3"><button type="button" class="btn button_border delete-row-button">
@@ -842,8 +852,6 @@
             $('.table tbody').append(newRow);
 
             console.log(defaultItemOptions);
-
-            
             $('#item_name_' + serialNumber).append(defaultItemOptions.clone());
             $('#item_name_' + serialNumber).select2();
             updateTotalItems();
@@ -901,7 +909,7 @@
                 data: $(this).serialize(),
                 csrfmiddlewaretoken: '{{ csrf_token }}',
                 success: function(data) {
-                    var dropdown = $('#party_name');
+                    var dropdown = $('#item_name');
                     dropdown.empty();
                     dropdown.append(`<option selected>Select Item</option>`);
                     $.each(data, function(key, value) {
@@ -916,11 +924,12 @@
 
         $(document).on('change', '[id^=item_name_]', function () {
             var rowId = $(this).attr('id').split('_')[2]; // Extract the row number from the ID
-            var itemId = $(this).val(); // Get the selected item ID
 
+            var selectedId = $(this).val(); // Get the selected item ID
+            var itemId = selectedId.split(' ')[0];
             // Make an AJAX request to fetch the item details
             $.ajax({
-                url: "{% url 'get_itemdetails' %}",
+                url: "{% url 'fetch_item_details' %}",
                 data: {
                     id: itemId,
                     csrfmiddlewaretoken: '{{ csrf_token }}',
@@ -931,13 +940,21 @@
                     $('#hsn_' + rowId).val(data.hsn);
                     $('#price_' + rowId).val(data.price);
                     $('#tax_' + rowId).val(data.tax);
+                    calculateTotal($('#hsn_' + rowId).closest('tr'));
+                    calculatevatperc($('#hsn_' + rowId).closest('tr'));
+                    calculateSubtotal();
+                    calculateTax();
+                    calculateGrandtotal();
                     // You may add more fields here if needed
                 }
             });
         });
 
-
         $("#item_name").change(function(){
+            var row = $(this).closest('tr');
+            var selectedValue = $(this).val();
+            var itemId = selectedValue.split(' ')[0];
+            
             $.ajax({
                 url:"{% url 'get_itemdetails' %}",
                 data:{
@@ -949,10 +966,15 @@
                     $('#hsn').val(""+data.hsn);
                     $('#price').val(""+data.price);
                     $("#tax").val(""+data.tax);
+                    calculateTotal(row);
+                    calculatevatperc(row);
+                    calculateSubtotal();
+                    calculateTax();
+                    calculateGrandtotal();
                 }
             });
         });
-
+    
         $(document).on('click', '#unitmodalsubmit', function () {
             $.ajax({
                 type: "POST",
@@ -1094,13 +1116,26 @@
             var discount = parseFloat(row.find('.discount-input').val());
 
             var total=qty*price-discount;
-            var vatper=total*'0.05';
+            
             row.find('.total-input').val(total); 
-            row.find('.vatper-input').val(vatper);
         }
+
+        function calculatevatperc(row){
+            var total = parseFloat(row.find('.total-input').val());
+            var taxamt = row.find('.tax-input').val();
+            var vatRate = 0;
+            if (taxamt.includes("VAT 5%")) {
+                vatRate = 0.05;
+            }
+
+            var tax = total * vatRate;
+            row.find('.vatper-input').val(tax);
+        }
+
         $(document).on('input','.qty-input, .price-input, .discount-input,.adjustment', function(){
             var row=$(this).closest('tr');
             calculateTotal(row);
+            calculatevatperc(row);
             calculateSubtotal();
             calculateTax();
             calculateGrandtotal();
@@ -1119,12 +1154,12 @@
 
         function calculateTax(){
             var totalTax = 0;
-            $('.table tbody tr').each(function() {
-                var total = parseFloat($(this).find('.total-input').val());
-                var tax=total*0.05;
-                totalTax+=tax;
+            $('.table tbody tr').each(function () {
+                var vatper = parseFloat($(this).find('.vatper-input').val());
+                totalTax += vatper;
             });
-            $('#disvatper').val(totalTax); 
+
+            $('#disvatper').val(totalTax);
             $('#tax_amnt').val(totalTax.toFixed(2));
         }
 

@@ -505,19 +505,18 @@ def get_itemdetails(request):
   else:
       cmp = request.user.employee.company  
   item_id = request.POST.get('id').split(" ")[0]
-  item=Item.objects.get(company=cmp,id=item_id)
+  item=Item.objects.get(company=cmp,pk=item_id)
   hsn=item.itm_hsn
   price=item.itm_sale_price
   tax=item.itm_vat
   return JsonResponse({'hsn':hsn,'price':price,'tax':tax})
 
 def fetch_item_details(request):
-  if request.method == 'GET':
     if request.user.is_company:
       cmp = request.user.company
     else:
       cmp = request.user.employee.company
-    item_id = request.GET.get('item_id')
+    item_id = request.POST.get('id')
     item = Item.objects.get(pk=item_id,company=cmp)
     data = {
                 'hsn': item.itm_hsn,
@@ -563,32 +562,54 @@ def saveCreditnote(request):
       creditnote.salesinvoice=salesinvoice
       creditnote.save()
 
-    item_name = request.POST.getlist('item_name[]')
-    if not item_name:
-      print("No Items")
-      return HttpResponse("No item names provided", status=400)
-    quantity = request.POST.getlist("qty[]")
-    price = request.POST.getlist("price[]")
-    tax = request.POST.getlist("tax[]")
-    discount = request.POST.getlist("discount[]")
-    hsn = request.POST.getlist("hsn[]")
-    total = request.POST.getlist("total[]")
+    # item_names = request.POST.getlist('item_name')
+    # for item_name in item_names:
+    #   print(item_name)
+    # for item_data in item_names:
+
+    #   item_data_parts = item_data.split()
+
+    #     # Extract individual values
+    #   itemid = item_data_parts[0]
+    #   itmhsn = item_data_parts[1]
+    #   itmsale_price = item_data_parts[2]
+    #   itmvat = item_data_parts[3]
+
+    #   print("Item ID:", itemid)
+    #   print("Item HSN:", itmhsn)
+    #   print("Item Sale Price:", itmsale_price)
+    #   print("Item VAT:", itmvat)
+
+    item_name = request.POST.getlist('item_name')
+    quantity = request.POST.getlist('qty')
+    price = request.POST.getlist('price')
+    tax = request.POST.getlist('tax')
+    discount = request.POST.getlist('discount')
+    hsn = request.POST.getlist('hsn')
+    total = request.POST.getlist('total')
     if len(item_name) == len(quantity) == len(price) == len(tax) == len(discount) == len(hsn) == len(total) and item_name and quantity and price and tax and discount and hsn and total:
       mapped=zip(item_name,quantity,price,tax,discount,hsn,total)
       mapped=list(mapped)
       for ele in mapped:
-        it=Item.objects.get(user = request.user, id = ele[0]).itm_name
+        item_name_parts = ele[0].split()
+        
+        item_id = item_name_parts[0]
+        it=Item.objects.get(user = request.user, id = item_id).itm_name
         print("item_name:", it)
 
         creditnoteitem=CreditNoteItem.objects.create(
-                user=usr,
-                credit_note=creditnote,
-                item=it,
-                hsn=ele[5],
-                quantity=ele[1],
-                tax=ele[3],
-                price=ele[2],
-                discount=ele[4],
-                total=ele[6])
-      return redirect('SalesReturn')
+                  user=usr,
+                  credit_note=creditnote,
+                  item=it,
+                  hsn=ele[5],
+                  quantity=ele[1],
+                  tax=ele[3],
+                  price=ele[2],
+                  discount=ele[4],
+                  total=ele[6])
+      if 'save_new' in request.POST:
+        return redirect('SalesReturn')
+      else:
+        return render(request,'listout.html',{'creditnote':creditnote,'creditnoteitem':creditnoteitem})
+  else:  
     return redirect('SalesReturn')  
