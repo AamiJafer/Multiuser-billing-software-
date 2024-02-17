@@ -16,6 +16,13 @@
         background-color: #68020F; 
         color: #fff; 
     }
+    .form-control{
+        border:1px solid #68020F;
+    }
+    .date-input{
+        width: 120px;
+    }
+    
 </style>
 <div class="body-wrapper">
     <div class="container">
@@ -23,12 +30,31 @@
         <div class="p-3 mb-5" style="border: 2px solid #68020F; border-radius: 2.5vh; background-color: #FFD6D7;">
             <div class="mb-3 mb-sm-0">
                 <h1 class="modal-title fs-5 p-1" style="color: #68020F; font-weight: 900;">CREDITNOTE</h1>
-                <div class="d-flex mb-3">
-                    <div class="search-box me-auto p-2">
-                        <input type="text" id="searchInput" placeholder="Search...">
+                
+                <div class="d-flex flex-wrap justify-content-between mb-3">
+                    <div class="d-flex flex-wrap">
+                        <div class="me-3 mb-2">
+                            <label for="fromDate" class="col-form-label">From Date:</label>
+                            <input type="date" class="form-control date-input" id="fromDate">
+                        </div>
+                        <div class="me-3 mb-2">
+                            <label for="toDate" class="col-form-label">To Date:</label>
+                            <input type="date" class="form-control date-input" id="toDate">
+                        </div>
                     </div>
-                    <div class="p-2">
-                        <button type="button" class="btn button_border me-3">+ Add Credit Note</button>
+                    <div class="me-2 mb-2">
+                        scff
+                    </div>
+                </div>
+                
+                <div class="d-flex flex-wrap justify-content-between">
+                    <div class="me-auto mb-2">
+                        <div class="search-box">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <button type="button" class="btn button_border me-3" id="addCreditNoteBtn">+ Add Credit Note</button>
                     </div>
                 </div>
             </div>
@@ -42,10 +68,33 @@
                             <th>PARTY NAME</th>
                             <th>TYPE</th>
                             <th>TOTAL</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        
+                        {% for c in creditnoteitems %}
+                        <tr>
+                            <td>{{forloop.counter}}</td>
+                            <td>{{c.credit_note.returndate|date:'Y-m-d'}}</td>
+                            <td>{{c.credit_note.reference_no}}</td>
+                            <td>{{c.credit_note.party.party_name}}</td>
+                            <td>{{c.credit_note.party.payment}}</td>
+                            <td>{{c.credit_note.grandtotal}}</td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span style="font-size: 20px; background:none;">&#8942;</span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <li><a class="dropdown-item" href="#">View</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'edit_creditnote' c.id %}">Edit</a></li>
+                                        <li><a class="dropdown-item" href="#">History</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'delete_creditnoteitem' c.id %}">Delete</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
@@ -53,4 +102,46 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function(){
+        var addCreditNoteBtn = $('#addCreditNoteBtn');
+        addCreditNoteBtn.click(function(){
+            window.location.href="{% url 'SalesReturn' %}"
+        });
+    });
+
+    $(document).ready(function() {
+        $('#searchInput').on('input', function() {
+            var searchText = $(this).val().toLowerCase();
+            $('tbody tr').each(function() {
+                var rowData = $(this).text().toLowerCase();
+                if (rowData.includes(searchText)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+
+        $('#fromDate, #toDate').on('change', function() {
+            var fromDate = new Date($('#fromDate').val());
+            var toDate = new Date($('#toDate').val());
+            
+            $('#toDate').attr('min', $('#fromDate').val());
+
+            $('tbody tr').each(function() {
+                var date = new Date($(this).find('td:eq(1)').text());
+                if ((fromDate <= date && date <= toDate) || 
+                    ($('#fromDate').val() === '' && date <= toDate) || 
+                    (fromDate <= date && $('#toDate').val() === '')) {
+                        $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+
+    });
+</script>
 {% endblock %}

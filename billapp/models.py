@@ -116,6 +116,7 @@ class SalesInvoice(models.Model):
 class CreditNote(models.Model):
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,null=True,blank=True)
     company = models.ForeignKey(Company,on_delete= models.CASCADE,null=True,blank=True)
+    partystatus=models.CharField(max_length=100,null=True,blank=True)
     party=models.ForeignKey(Party,on_delete= models.CASCADE,null=True,blank=True)
     salesinvoice=models.ForeignKey(SalesInvoice,on_delete= models.CASCADE,null=True,blank=True)
     reference_no=models.IntegerField(null=True,default="0")
@@ -129,6 +130,7 @@ class CreditNote(models.Model):
 class CreditNoteItem(models.Model):
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,null=True,blank=True)
     credit_note = models.ForeignKey(CreditNote, related_name='items', on_delete=models.CASCADE)
+    company = models.ForeignKey(Company,on_delete= models.CASCADE,null=True,blank=True)
     item = models.CharField(max_length=255,null=True)
     hsn = models.CharField(max_length=100, blank=True)
     quantity = models.IntegerField(default=0)

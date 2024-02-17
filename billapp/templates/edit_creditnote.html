@@ -150,6 +150,23 @@
                     {% csrf_token %}
                     <div class="form-group row g-3">
                         <div class="col-md-6" style="display: flex; margin-top: 10px; margin-left: 10px;">
+                            
+                        {% if credit_note.partystatus == "partyon" %}
+                            <input type="text" name="partystatus" id="partystatus" hidden>
+                            <div class="form-check">  
+                                <label style="user-select: none;" class="fs-4 tb" for="partyRadio">
+                                    Party ON
+                                </label>
+                                <input class="me-1" type="radio" name="partyStatusGroup" id="partyonRadio" required checked>
+                            </div>
+                            <div class="form-check" style="margin-left: 30px;">
+                                
+                                <label style="user-select: none;" class="fs-4 tb" for="partyRadio">
+                                    Party OFF
+                                </label>
+                                <input class="me-1" type="radio" name="partyStatusGroup" id="partyoffRadio" required>
+                            </div>
+                        {% else %}
                             <input type="text" name="partystatus" id="partystatus" hidden>
                             <div class="form-check">  
                                 <label style="user-select: none;" class="fs-4 tb" for="partyRadio">
@@ -162,8 +179,11 @@
                                 <label style="user-select: none;" class="fs-4 tb" for="partyRadio">
                                     Party OFF
                                 </label>
-                                <input class="me-1" type="radio" name="partyStatusGroup" id="partyoffRadio" required>
+                                <input class="me-1" type="radio" name="partyStatusGroup" id="partyoffRadio" required checked>
                             </div>
+                        {% endif %}
+
+
                         </div><br>  
                     </div>
                     <div class="row mt-3">
@@ -1124,7 +1144,7 @@
             var total = parseFloat(row.find('.total-input').val());
             var taxamt = row.find('.tax-input').val();
             var vatRate = 0;
-            if (taxamt && taxamt.includes("VAT 5%")) {
+            if (taxamt.includes("VAT 5%")) {
                 vatRate = 0.05;
             }
 
@@ -1132,7 +1152,7 @@
             row.find('.vatper-input').val(tax);
         }
 
-        $(document).on('input','.qty-input, .price-input, .discount-input, .adjustment', function(){
+        $(document).on('input','.qty-input, .price-input, .discount-input,.adjustment', function(){
             var row=$(this).closest('tr');
             calculateTotal(row);
             calculatevatperc(row);
@@ -1166,12 +1186,15 @@
         function calculateGrandtotal(){
             var grandtotal=0;
             var subtotal=parseFloat($('.subtotal').val());
-            var tax_amnt=parseFloat($('.tax_amnt').val());
-            var adj = parseFloat($('#adjustment').val());
-            console.log("Adjustment:", adj);
-            grandtotal=subtotal+tax_amnt+(adj);
+            var vat=parseFloat($('.tax_amnt').val());
+            var adj=parseFloat($('.adjustment').val());
+            grandtotal=subtotal+vat+adj;
             $('#grandTotal').val(grandtotal.toFixed(2))
-        }    
+        }
+        
+        
+
+        
     });
 </script>
 {% endblock %}

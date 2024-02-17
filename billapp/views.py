@@ -333,9 +333,16 @@ def reject_staff(request,id):
   messages.info(request,'Employee Deleted !!')
   return redirect('load_staff_request')
 
-def creditnote(request):
-  usr=request.user
-  return render(request,'CreditNote.html',{'usr':usr})
+def creditNote(request):
+  if request.user.is_company:
+        cmp = request.user.company
+  else:
+        cmp = request.user.employee.company
+  creditnotes=CreditNote.objects.filter(company=cmp)
+  if not creditnotes:
+    return render(request,'CreditNote.html',{'usr':request.user})
+  else:
+    return redirect('SalesReturn') 
 
 def SalesReturn(request):
     print("Request user:", request.user)
@@ -551,7 +558,7 @@ def saveCreditnote(request):
     grandtotal=request.POST['grandTotal']
     party_status = request.POST.get('partystatus')
     print("Partystatus: ",party_status)
-    creditnote = CreditNote.objects.create(user=usr, company=cmp,reference_no=reference_no, returndate=return_date, subtotal=subtotal, vat=vat, adjustment=adjustment, grandtotal=grandtotal)
+    creditnote = CreditNote.objects.create(user=usr, company=cmp,reference_no=reference_no,partystatus=party_status,returndate=return_date, subtotal=subtotal, vat=vat, adjustment=adjustment, grandtotal=grandtotal)
     if party_status=='partyon':
       party_details = request.POST.get('party_details')
       party_id = party_details.split()[0]
@@ -600,6 +607,7 @@ def saveCreditnote(request):
         creditnoteitem=CreditNoteItem.objects.create(
                   user=usr,
                   credit_note=creditnote,
+                  company=cmp,
                   item=it,
                   hsn=ele[5],
                   quantity=ele[1],
@@ -610,6 +618,38 @@ def saveCreditnote(request):
       if 'save_new' in request.POST:
         return redirect('SalesReturn')
       else:
-        return render(request,'listout.html',{'creditnote':creditnote,'creditnoteitem':creditnoteitem})
+        return redirect('listout_page')
   else:  
     return redirect('SalesReturn')  
+  
+def listout_page(request):
+  if request.user.is_company:
+      cmp = request.user.company
+  else:
+      cmp = request.user.employee.company 
+  creditnoteitems=CreditNoteItem.objects.filter(company=cmp)
+  context = {'usr':request.user,'creditnoteitems':creditnoteitems}
+  return render(request,'listout.html',context)
+  
+def edit_creditnote(request,pk):
+  if request.user.is_company:
+      cmp = request.user.company
+  else:
+      cmp = request.user.employee.company
+  creditnoteitem=CreditNoteItem.objects.get(id=pk)
+  credit_note = creditnoteitem.credit_note
+  salesinvoice=credit_note.salesinvoice
+  party=credit_note.party
+  context={'usr':request.user,
+           'creditnoteitem':creditnoteitem,
+           'credit_note':credit_note,
+           'salesinvoice':salesinvoice,
+           'party':party
+          }
+  return render(request,'edit_creditnote.html',context)
+
+def delete_creditnoteitem(request,pk):
+  creditnote_item=CreditNoteItem.objects.get(id=pk)
+  creditnote_item.delete()
+  return redirect('listout_page')
+
