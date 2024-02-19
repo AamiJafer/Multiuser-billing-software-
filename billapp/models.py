@@ -131,6 +131,7 @@ class CreditNoteItem(models.Model):
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,null=True,blank=True)
     credit_note = models.ForeignKey(CreditNote, related_name='items', on_delete=models.CASCADE)
     company = models.ForeignKey(Company,on_delete= models.CASCADE,null=True,blank=True)
+    items=models.ForeignKey(Item,on_delete= models.CASCADE,null=True,blank=True)
     item = models.CharField(max_length=255,null=True)
     hsn = models.CharField(max_length=100, blank=True)
     quantity = models.IntegerField(default=0)

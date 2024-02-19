@@ -601,6 +601,7 @@ def saveCreditnote(request):
         item_name_parts = ele[0].split()
         
         item_id = item_name_parts[0]
+        items = Item.objects.get(pk=item_id)
         it=Item.objects.get(user = request.user, id = item_id).itm_name
         print("item_name:", it)
 
@@ -608,6 +609,7 @@ def saveCreditnote(request):
                   user=usr,
                   credit_note=creditnote,
                   company=cmp,
+                  items=items,
                   item=it,
                   hsn=ele[5],
                   quantity=ele[1],
@@ -627,8 +629,8 @@ def listout_page(request):
       cmp = request.user.company
   else:
       cmp = request.user.employee.company 
-  creditnoteitems=CreditNoteItem.objects.filter(company=cmp)
-  context = {'usr':request.user,'creditnoteitems':creditnoteitems}
+  creditnotes=CreditNote.objects.filter(company=cmp)
+  context = {'usr':request.user,'creditnotes':creditnotes}
   return render(request,'listout.html',context)
   
 def edit_creditnote(request,pk):
@@ -636,20 +638,112 @@ def edit_creditnote(request,pk):
       cmp = request.user.company
   else:
       cmp = request.user.employee.company
-  creditnoteitem=CreditNoteItem.objects.get(id=pk)
-  credit_note = creditnoteitem.credit_note
-  salesinvoice=credit_note.salesinvoice
-  party=credit_note.party
+  parties = Party.objects.filter(company=cmp)
+  items = Item.objects.filter(company=cmp)
+  unit = Unit.objects.filter(company=cmp)
+  creditnote_curr=CreditNote.objects.get(id=pk)
+  creditnote_items=CreditNoteItem.objects.filter(credit_note=creditnote_curr)
+  for item in creditnote_items:
+    print(f"Item ID: {item.id}")
+    print(f"Credit Note: {item.item}")
   context={'usr':request.user,
-           'creditnoteitem':creditnoteitem,
-           'credit_note':credit_note,
-           'salesinvoice':salesinvoice,
-           'party':party
+           'creditnoteitem_curr':creditnote_items,
+           'credit_note':creditnote_curr,
+           'parties':parties,
+           'items':items,'unit':unit
           }
   return render(request,'edit_creditnote.html',context)
 
-def delete_creditnoteitem(request,pk):
-  creditnote_item=CreditNoteItem.objects.get(id=pk)
-  creditnote_item.delete()
+def delete_creditnote(request,pk):
+  creditnote=CreditNote.objects.get(id=pk)
+  creditnote.delete()
   return redirect('listout_page')
+
+def updateCreditnote(request,pk):
+  if request.method=="POST":
+    if request.user.is_company:
+      cmp = request.user.company
+    else:
+      cmp = request.user.employee.company
+    usr = CustomUser.objects.get(username=request.user)
+    creditnote=CreditNote.objects.get(id=pk)
+    creditnote.user=request.user
+    creditnote.company=cmp
+    creditnote.returndate=request.POST['returndate']
+    creditnote.reference_no=request.POST['refnum']
+    creditnote.subtotal=request.POST['subtotal']
+    creditnote.vat=request.POST['disvatper']
+    creditnote.adjustment=request.POST['adjustment']
+    creditnote.grandtotal=request.POST['grandTotal']
+    creditnote.partystatus = request.POST.get('partystatus')
+    creditnote.save()
+    if creditnote.partystatus=='partyon':
+      party_details = request.POST.get('party_details')
+      party_id = party_details.split()[0]
+      party = Party.objects.get(pk=party_id)
+      salesinvoice=SalesInvoice.objects.get(company=cmp,party=party)
+      print(party.party_name)
+      creditnote.party=party
+      creditnote.salesinvoice=salesinvoice
+      creditnote.save()
+
+    item_name = request.POST.getlist('item_name')
+    quantity = request.POST.getlist('qty')
+    price = request.POST.getlist('price')
+    tax = request.POST.getlist('tax')
+    discount = request.POST.getlist('discount')
+    hsn = request.POST.getlist('hsn')
+    total = request.POST.getlist('total')
+    if len(item_name) == len(quantity) == len(price) == len(tax) == len(discount) == len(hsn) == len(total) and item_name and quantity and price and tax and discount and hsn and total:
+      mapped=zip(item_name,quantity,price,tax,discount,hsn,total)
+      mapped=list(mapped)
+      credit_note_items = CreditNoteItem.objects.filter(credit_note=creditnote)
+
+      item_ids=[]
+      for ele in mapped:
+        item_name_parts = ele[0].split()
+        
+        item_id = item_name_parts[0]
+        item_ids.append(item_id)
+        items = Item.objects.get(company=cmp,pk=item_id)
+        it=Item.objects.get(user = request.user, id = item_id).itm_name
+        print("item_name:", it)
+        existing_credit_note_item = credit_note_items.filter(items=items).first()
+        
+        if existing_credit_note_item:
+          existing_credit_note_item.quantity = ele[1]
+          existing_credit_note_item.price = ele[2]
+          existing_credit_note_item.tax = ele[3]
+          existing_credit_note_item.discount = ele[4]
+          existing_credit_note_item.hsn = ele[5]
+          existing_credit_note_item.total = ele[6]
+          existing_credit_note_item.save()
+        else:
+          CreditNoteItem.objects.create(
+                user=usr,
+                credit_note=creditnote,
+                company=cmp,
+                items=items,
+                item=it,
+                hsn=ele[5],
+                quantity=ele[1],
+                tax=ele[3],
+                price=ele[2],
+                discount=ele[4],
+                total=ele[6]
+            )
+      existing_item_ids = [int(id.split('_')[-1]) for id in item_ids]
+      items_to_delete = credit_note_items.exclude(items__id__in=existing_item_ids)
+      items_to_delete.delete()
+      return redirect('listout_page')
+
+
+
+
+
+
+
+
+
+
 

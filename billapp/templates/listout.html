@@ -72,14 +72,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for c in creditnoteitems %}
+                        {% for c in creditnotes %}
                         <tr>
                             <td>{{forloop.counter}}</td>
-                            <td>{{c.credit_note.returndate|date:'Y-m-d'}}</td>
-                            <td>{{c.credit_note.reference_no}}</td>
-                            <td>{{c.credit_note.party.party_name}}</td>
-                            <td>{{c.credit_note.party.payment}}</td>
-                            <td>{{c.credit_note.grandtotal}}</td>
+                            <td>{{c.returndate|date:'Y-m-d'}}</td>
+                            <td>{{c.reference_no}}</td>
+                            <td>{{c.party.party_name}}</td>
+                            <td>{{c.party.payment}}</td>
+                            <td>{{c.grandtotal}}</td>
                             <td>
                                 <div class="dropdown">
                                     <button class="btn" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
@@ -89,7 +89,7 @@
                                         <li><a class="dropdown-item" href="#">View</a></li>
                                         <li><a class="dropdown-item" href="{% url 'edit_creditnote' c.id %}">Edit</a></li>
                                         <li><a class="dropdown-item" href="#">History</a></li>
-                                        <li><a class="dropdown-item" href="{% url 'delete_creditnoteitem' c.id %}">Delete</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'delete_creditnote' c.id %}">Delete</a></li>
                                     </ul>
                                 </div>
                             </td>

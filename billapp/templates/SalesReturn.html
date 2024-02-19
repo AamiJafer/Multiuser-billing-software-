@@ -218,10 +218,10 @@
                             <label for="validationDefaultUsername" class="form-label">Return Date</label>
                             <input type="date" class="form-control" id="returndate" name="returndate" value="{% now 'Y-m-d' %}">
                         </div>
-                        <div class="col-md-4 partyon" hidden>
+                        <!-- <div class="col-md-4 partyon" hidden>
                             <label for="validationDefaultUsername" class="form-label">Place of Supply</label>
                             <input type="text" class="form-control" id="placesupply" name="placesupply">
-                        </div>
+                        </div> -->
                         <div class="col-md-4 partyon" hidden>
                             <label for="validationDefaultUsername" class="form-label">Payment method</label>
                             <input type="text" class="form-control" id="paymethod" name="paymethod">
@@ -775,7 +775,7 @@
                     $('#party_phone').val(""+data.phone);
                     $('#invoiceno').val(""+data.invoiceno);
                     $('#invoicedate').val(""+data.invoicedate);
-                    $('#placesupply').val(""+data.placeofsupply);
+                    // $('#placesupply').val(""+data.placeofsupply);
                     $('#paymethod').val(""+data.payment);
                 }
             });
