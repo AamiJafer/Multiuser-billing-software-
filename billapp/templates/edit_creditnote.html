@@ -256,11 +256,11 @@
                                             <div class="myDropDown">
                                                 <select id="item_name_{{forloop.counter}}" class="form-control item-name" name="item_name" required>      
                                                     <option disabled>Select Item</option>
-                                                    <option selected value="{{ i.items.id }} {{ i.itm_hsn }} {{ i.itm_sale_price }} {{ i.itm_vat }}">
+                                                    <option selected value="{{ i.items.id }} {{ i.hsn }} {{ i.price }} {{ i.tax }}">
                                                         {{ i.item }}
                                                     </option>
                                                     {% for item in items %}
-                                                        {% if item.id != i.id %}
+                                                        {% if item.id != i.items.id %}
                                                         <option value="{{ item.id }} {{ item.itm_hsn }} {{ item.itm_sale_price }} {{ item.itm_vat }}">{{ item.itm_name }}</option>
                                                         {% endif %}   
                                                     {% endfor %}         
@@ -907,9 +907,9 @@
                 success: function (data) {
                     var dropdown = $('#item_name_' + serialNumber);
                 dropdown.empty();
-                dropdown.append(`<option selected>Select Item</option>`);
-                $.each(data, function(id, name) {
-                    dropdown.append($('<option></option>').text(name));
+                dropdown.append(`<option disabled selected>Select Item</option>`);
+                $.each(data, function(key, value) {
+                    dropdown.append($('<option></option>').attr('value', key).text(value[1]).val(value[0] + " " + value[2] + " " + value[3] + " " + value[4]));
                 });
                 },
                 error: function (xhr, status, error) {
@@ -1017,7 +1017,7 @@
             });
         });
 
-        $("#item_name").change(function(){
+        $(document).on('change', '.item-name', function(){
             var row = $(this).closest('tr');
             var selectedValue = $(this).val();
             var itemId = selectedValue.split(' ')[0];
@@ -1025,14 +1025,14 @@
             $.ajax({
                 url:"{% url 'get_itemdetails' %}",
                 data:{
-                    id:$('#item_name').val(),
+                    id: selectedValue,
                     csrfmiddlewaretoken: '{{ csrf_token }}',
                 },
                 type:'POST',
                 success: function(data) {
-                    $('#hsn').val(""+data.hsn);
-                    $('#price').val(""+data.price);
-                    $("#tax").val(""+data.tax);
+                    row.find('.hsn-input').val(""+data.hsn);
+                    row.find('.price-input').val(""+data.price);
+                    row.find('.tax-input').val(""+data.tax);
                     calculateTotal(row);
                     calculatevatperc(row);
                     calculateSubtotal();

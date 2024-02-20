@@ -736,6 +736,17 @@ def updateCreditnote(request,pk):
       items_to_delete = credit_note_items.exclude(items__id__in=existing_item_ids)
       items_to_delete.delete()
       return redirect('listout_page')
+    
+def credit_templates(request,pk):
+  if request.user.is_company:
+      cmp = request.user.company
+  else:
+      cmp = request.user.employee.company 
+  creditnote_curr=CreditNote.objects.get(id=pk)
+  creditnote_items=CreditNoteItem.objects.filter(credit_note=creditnote_curr)
+  context = {'usr':request.user,'company':cmp,'creditnoteitem_curr':creditnote_items,
+           'creditnote':creditnote_curr}
+  return render(request,'creditnote_temp.html',context)
 
 
 
