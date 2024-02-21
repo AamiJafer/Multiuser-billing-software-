@@ -2,10 +2,22 @@
 {% load static %}
 {% block content %}
 <style>
+     @media print {
+    table th {
+        background-color: #68020F !important;
+        color: white !important;
+
+    }
+    body{
+        background-color: #555;
+    }
+}
+</style>
+<style>
     .invoice-box {
 				max-width: 800px;
 				margin: auto;
-				padding: 30px;
+				padding: 0;
 				border: 1px solid #eee;
 				box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
 				font-size: 16px;
@@ -15,109 +27,463 @@
                 min-height: 920px;
                 /* height: 1000px; */
 			}
+            .invoice-box2{
+				max-width: 800px;
+				margin: auto;
+				padding: 25px;
+				border: 1px solid #eee;
+				box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+				font-size: 16px;
+				line-height: 24px;
+				font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+				color: #555;
+                min-height: 920px;
+                /* height: 1000px; */
+			}
+            .heading2{
+            text-align: center;
+            width: 100%;
+            padding: 20px;
+            
+            background-color: #68020F !important;  
+            
+        }
+        .heading2 h2{
+            color: white;
+           
+        }
         .heading{
             text-align: center;
             width: 100%;
-            background-color: #68020F;  
+            background-color: #68020F !important;  
+            padding: 30px;
+            padding-bottom: 30px;
         }
-        .heading h2,h5{
+        .heading h2,p{
             color: white;
+           
+        }
+        .credit-content2{
+            padding: 30px;
+        }
+        .credit-content{
+            padding: 50px;
+        }
+        .underline{
+            border-bottom: 1px solid rgb(152, 147, 147);
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        .button_border {
+            /* text-align: center; */
+            width: 40px;
+            border: 1px solid #68020F;
+            color: #68020F;
+            padding: 7px;
         }
 
+        .button_border:hover {
+            background-color: #68020F;
+            color: white;
+        }
+        .active {
+            background-color: #68020F !important;
+            color: white !important;
+        }
+       
 </style>
+
 <div class="body-wrapper">
     <br><br><br><br><br><br>
     <div class="row ps-3 pe-3 m-0">
         <div class="col-sm-12 col-lg-12  ps-2 pe-3 pb-2">
             <div class="card bg-light bs"style="height:100%;">
-                <div class="row m-0">
-                    <div class="invoice-box">
-                        <div class="heading">
-                            <h2>CREDIT NOTE</h2>
-                            <h5>{{company.company_name}}<br>
-                                {{company.city}}, {{company.state}}
-                            </h5>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <h4>To:</h4>
-                                <p>{{creditnote.party.party_name}}<br>
-                                    {{creditnote.party.address}},
-                                    {{creditnote.party.state}}</p>
+                 
+                <div id ="pdfexclude" style="display: flex; margin-top: 30px; margin-left: auto;">
+                    <button class="btn p-0 ps-2 pe-2 ms-2" type="button" onclick="print_credit()" style="color: #FF474D;">
+                        <i class="fas fa-print" style="font-size:175%;"></i><br>PRINT
+                    </button>
+                    <button class="btn p-0 ps-2 pe-2 ms-2" type="button" onclick="export_as_pdf()" style="color: #FF474D;">
+                        <i class="fas fa-file-pdf" style="font-size:175%;"></i><br>PDF
+                    </button>
+                    
+                    <div class="dropdown">
+                        <button class="btn dropbtn" type="button" onclick="toggleDropdown()" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false"  style="color: #FF474D;">
+                            <i class="fas fa-share" style="font-size:175%;"></i><br>Share
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li><a class="dropdown-item" href="#" onclick="shareViaWhatsApp()">WhatsApp</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="shareViaEmail()">Email</a></li>
+                    </div>
+                    
+                </div>
+                <div class="row" style="margin-top: 30px;">
+                    <div id="creditnote_detail_target1">
+                    <div id="template1" class="template">    
+                        <div class="invoice-box" id="invoice-box1">
+                            <div class="heading">
+                                <h2>CREDIT NOTE</h2><br>
+                                <p>{{company.company_name}}<br>
+                                    {{company.city}}, {{company.state}}
+                                </p>
                             </div>
-                            <div class="col">
-                                <h4>Reference No: </h4><span>{{creditnote.reference_no}}</span>
-                                <h4>Date: </h4><span>{{creditnote.returndate}}</span>
+                            <div class="credit-content">
+                                <div class="row" style="padding-top: 30px;">
+                                    <div class="col">
+                                        <h5>To:</h5>
+                                        {{creditnote.party.party_name}}<br>
+                                            {{creditnote.party.address}},
+                                            {{creditnote.party.state}}
+                                    </div>
+                                    <div class="col">
+                                        <div class="d-flex justify-content-end">
+                                        <table  style="height: 90px;">
+                                            <tr>
+                                                <td style="width:150px"><h5>Reference No: </h5></td>
+                                                <td><span>{{creditnote.reference_no}}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width:150px"><h5>Date: </h5></td>
+                                                <td><span>{{creditnote.returndate}}</span></td>
+                                            </tr>
+                                        </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="table-responsive" style="padding-top: 30px;">
+                                    <table id="itemtable" class="table table-bordered  tb table-responsive w-100">
+                                        <thead style="background: #68020F; color: white;">
+                                                <th>PRODUCT</th>
+                                                <th>HSN</th>
+                                                <th>QTY</th>
+                                                <th>PRICE</th>
+                                                <th>TAX</th>
+                                                <th>DISCOUNT</th>
+                                                <th>TOTAL</th>
+                                            
+                                        </thead>
+                                        <tbody>
+                                            {% for i in creditnoteitem_curr %}
+                                            <tr style="background-color: #FFD6D7;">
+                                                <td class="p-3">{{ i.item }} </td>
+                                                <td class="p-3">{{i.hsn}}</td>
+                                                <td class="p-3">{{i.quantity}}</td>
+                                                <td class="p-3">{{i.price}}</td>
+                                                <td class="p-3">{{i.tax}}</td>
+                                                <td class="p-3">{{i.discount}}</td>
+                                                <td class="p-3">{{i.total}}</td>
+                                            </tr>
+                                            {% endfor %}
+                                            
+                                        </tbody>
+                                        
+                                    </table>
+                                </div>
+                                <div class="row" style="padding-top: 30px;">
+                                    <div class="col d-flex justify-content-end">
+                                        <table class="amount" style="width: 250px; height: 180px;">
+                                            <tr>
+                                                <td style="width: 150px;">Subtotal</td>
+                                                <td style="width: 50px;">:</td>
+                                                <td style="width: 50px;text-align: end;">{{creditnote.subtotal}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>VAT</td>
+                                                <td>:</td>
+                                                <td style="width: 100px;text-align: end;">{{creditnote.vat}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Tax Amount</td>
+                                                <td>:</td>
+                                                <td style="width: 100px;text-align: end;">{{creditnote.vat}}</td>
+                                            </tr>
+                                            <tr class="underline">
+                                                <td>Adjustment</td>
+                                                <td>:</td>
+                                                <td style="width: 100px;text-align: end;">{{creditnote.adjustment}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Grand Total</td>
+                                                <td>:</td>
+                                                <td style="width: 100px;text-align: end;">{{creditnote.grandtotal}}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-sm mt-3" style="text-align: center;">
-                                <thead>
-                                    <tr>
-                                        <th>PRODUCT</th>
-                                        <th>HSN</th>
-                                        <th>QTY</th>
-                                        <th>PRICE</th>
-                                        <th>TAX</th>
-                                        <th>DISCOUNT</th>
-                                        <th>TOTAL</th>
+                    </div>
+                    </div>
+                    <div id="creditnote_detail_target2">
+                    <div id="template2" class="template"  style="display: none;">
+                        <div class="invoice-box2" id="invoice-box2">
+                            <div class="heading2">
+                                <h2>CREDIT NOTE</h2>
+                            </div>
+                            <div class="row" style="padding-top: 30px;">
+                                <div class="col">
+                                    <div class="d-flex">
+                                    <h5>Reference No: </h5><span style="padding-left: 20px;">{{creditnote.reference_no}}</span></div>
+                                    <div class="d-flex">
+                                    <h5>Date: </h5><span style="padding-left: 20px;">{{creditnote.returndate}}</span></div>
+                                </div>
+                            </div>
+                            
+                            <div class="credit-content2">
+                                <div class="row" style="padding-top: 30px;">
+                                    <div class="col">
+                                        <h5>From:</h5>
+                                        <div style="margin-left: 30px;">
+                                        <span style="color: #68020F;">{{company.company_name}}</span><br>
+                                            {{company.city}}, {{company.state}}
+                                        </div>
+                                    </div>
                                     
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for i in creditnoteitem_curr %}
-                                    <tr>
-                                        <td class="p-3">{{ i.item }} </td>
-                                        <td class="p-3">{{i.hsn}}</td>
-                                        <td class="p-3">{{i.quantity}}</td>
-                                        <td class="p-3">{{i.price}}</td>
-                                        <td class="p-3">{{i.tax}}</td>
-                                        <td class="p-3">{{i.discount}}</td>
-                                        <td class="p-3">{{i.total}}</td>
-                                    </tr>
-                                    {% endfor %}
+                                    <div class="col">
+                                        <div class="d-flex justify-content-end">
+                                            <div>
+                                                <h5 style="margin-right: 30px;">To:</h5>
+                                                <div style="margin-left: 30px;">
+                                                    <span style="color: #68020F;">{{creditnote.party.party_name}}</span><br>
+                                                        {{creditnote.party.address}},
+                                                        {{creditnote.party.state}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     
-                                </tbody>
-                                
-                            </table>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <table class="amount">
-                                    <tr>
-                                        <td>Subtotal</td>
-                                        <td>:</td>
-                                        <td>{{creditnote.subtotal}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>VAT</td>
-                                        <td>:</td>
-                                        <td>{{creditnote.vat}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Tax Amount</td>
-                                        <td>:</td>
-                                        <td>{{creditnote.vat}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Adjustment</td>
-                                        <td>:</td>
-                                        <td>{{creditnote.adjustment}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Grand Total</td>
-                                        <td>:</td>
-                                        <td>{{creditnote.grandtotal}}</td>
-                                    </tr>
-                                </table>
+                                </div>
+                                <div class="table-responsive" style="padding-top: 30px;">
+                                    <table id="itemtable" class="table table-bordered  tb table-responsive w-100">
+                                        <thead style="background: #68020F; color: white;">
+                                                <th>PRODUCT</th>
+                                                <th>HSN</th>
+                                                <th>QTY</th>
+                                                <th>PRICE</th>
+                                                <th>TAX</th>
+                                                <th>DISCOUNT</th>
+                                                <th>TOTAL</th>
+                                            
+                                        </thead>
+                                        <tbody>
+                                            {% for i in creditnoteitem_curr %}
+                                            <tr style="background-color: #FFD6D7;">
+                                                <td class="p-3">{{ i.item }} </td>
+                                                <td class="p-3">{{i.hsn}}</td>
+                                                <td class="p-3">{{i.quantity}}</td>
+                                                <td class="p-3">{{i.price}}</td>
+                                                <td class="p-3">{{i.tax}}</td>
+                                                <td class="p-3">{{i.discount}}</td>
+                                                <td class="p-3">{{i.total}}</td>
+                                            </tr>
+                                            {% endfor %}
+                                            
+                                        </tbody>
+                                        
+                                    </table>
+                                </div>
+                                <div class="row" style="padding-top: 30px;">
+                                    <div class="col d-flex justify-content-end">
+                                        <table class="amount" style="width: 250px; height: 180px;">
+                                            <tr>
+                                                <td style="width: 150px;">Subtotal</td>
+                                                <td style="width: 50px;">:</td>
+                                                <td style="width: 50px;text-align: end;">{{creditnote.subtotal}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>VAT</td>
+                                                <td>:</td>
+                                                <td style="width: 100px;text-align: end;">{{creditnote.vat}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Tax Amount</td>
+                                                <td>:</td>
+                                                <td style="width: 100px;text-align: end;">{{creditnote.vat}}</td>
+                                            </tr>
+                                            <tr class="underline">
+                                                <td>Adjustment</td>
+                                                <td>:</td>
+                                                <td style="width: 100px;text-align: end;">{{creditnote.adjustment}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Grand Total</td>
+                                                <td>:</td>
+                                                <td style="width: 100px;text-align: end;">{{creditnote.grandtotal}}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-
+                    </div>
+                    </div>
+                    <div id="creditnote_detail_target3">
+                    <div id="template3" class="template"  style="display: none;">
+                        <div class="invoice-box" id="invoice-box3">
+                            <div class="heading">
+                                333
+                                <h2>CREDIT NOTE</h2><br>
+                                <p>{{company.company_name}}<br>
+                                    {{company.city}}, {{company.state}}
+                                </p>
+                            </div>
+                            <div class="credit-content">
+                                <div class="row" style="padding-top: 30px;">
+                                    <div class="col">
+                                        <h5>To:</h5>
+                                        {{creditnote.party.party_name}}<br>
+                                            {{creditnote.party.address}},
+                                            {{creditnote.party.state}}
+                                    </div>
+                                    <div class="col">
+                                        <div class="d-flex justify-content-end">
+                                        <table  style="height: 90px;">
+                                            <tr>
+                                                <td style="width:150px"><h5>Reference No: </h5></td>
+                                                <td><span>{{creditnote.reference_no}}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width:150px"><h5>Date: </h5></td>
+                                                <td><span>{{creditnote.returndate}}</span></td>
+                                            </tr>
+                                        </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="table-responsive" style="padding-top: 30px;">
+                                    <table id="itemtable" class="table table-bordered  tb table-responsive w-100">
+                                        <thead style="background: #68020F; color: white;">
+                                                <th>PRODUCT</th>
+                                                <th>HSN</th>
+                                                <th>QTY</th>
+                                                <th>PRICE</th>
+                                                <th>TAX</th>
+                                                <th>DISCOUNT</th>
+                                                <th>TOTAL</th>
+                                            
+                                        </thead>
+                                        <tbody>
+                                            {% for i in creditnoteitem_curr %}
+                                            <tr style="background-color: #FFD6D7;">
+                                                <td class="p-3">{{ i.item }} </td>
+                                                <td class="p-3">{{i.hsn}}</td>
+                                                <td class="p-3">{{i.quantity}}</td>
+                                                <td class="p-3">{{i.price}}</td>
+                                                <td class="p-3">{{i.tax}}</td>
+                                                <td class="p-3">{{i.discount}}</td>
+                                                <td class="p-3">{{i.total}}</td>
+                                            </tr>
+                                            {% endfor %}
+                                            
+                                        </tbody>
+                                        
+                                    </table>
+                                </div>
+                                <div class="row" style="padding-top: 30px;">
+                                    <div class="col d-flex justify-content-end">
+                                        <table class="amount" style="width: 250px; height: 180px;">
+                                            <tr>
+                                                <td style="width: 150px;">Subtotal</td>
+                                                <td style="width: 50px;">:</td>
+                                                <td style="width: 50px;text-align: end;">{{creditnote.subtotal}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>VAT</td>
+                                                <td>:</td>
+                                                <td style="width: 100px;text-align: end;">{{creditnote.vat}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Tax Amount</td>
+                                                <td>:</td>
+                                                <td style="width: 100px;text-align: end;">{{creditnote.vat}}</td>
+                                            </tr>
+                                            <tr class="underline">
+                                                <td>Adjustment</td>
+                                                <td>:</td>
+                                                <td style="width: 100px;text-align: end;">{{creditnote.adjustment}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Grand Total</td>
+                                                <td>:</td>
+                                                <td style="width: 100px;text-align: end;">{{creditnote.grandtotal}}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     </div>
                 </div>
+                <div id="pdfexclude"> 
+                <div class="row" style="padding-top: 30px; margin-top: 20px;">
+                    <div class="col d-flex justify-content-center">
+                        <button id="btn1" onclick="showTemplate(1)" class="btn button_border me-2 active">1</button>
+                        <button id="btn2" onclick="showTemplate(2)" class="btn button_border me-2">2</button>
+                        <button id="btn3" onclick="showTemplate(3)" class="btn button_border me-2">3</button>
+                    </div>
+                </div>
+                </div>
             </div>
+            
         </div>
-   
+        
+    </div>
+    
 </div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+
+<script>
+    function showTemplate(templateNumber) {
+        document.querySelectorAll('.template').forEach(template => {
+            template.style.display = 'none';
+        });
+        document.querySelectorAll('.btn').forEach(button => {
+            button.classList.remove('active');
+        });
+        document.getElementById('template' + templateNumber).style.display = 'block';
+        document.getElementById('btn' + templateNumber).classList.add('active');
+        
+        window.scrollTo(0, 0);
+    }
+    function export_as_pdf() {
+        let activeTemplateId;
+        document.querySelectorAll('.btn').forEach(button => {
+            if (button.classList.contains('active')) {
+                activeTemplateId = button.id.replace('btn', '');
+            }
+        });
+
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = document.getElementById('creditnote_detail_target' + activeTemplateId).innerHTML;
+
+        html2pdf().from(tempDiv).save('CreditNote.pdf');      
+    }
+
+    function print_credit() {
+        let activeTemplateId;
+        document.querySelectorAll('.btn').forEach(button => {
+            if (button.classList.contains('active')) {
+                activeTemplateId = button.id.replace('btn', '');
+            }
+        });
+
+        const printContents = document.getElementById('creditnote_detail_target' + activeTemplateId).innerHTML;
+        const originalContents = document.body.innerHTML;
+
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+    }
+
+    function shareViaWhatsApp() {
+        
+        }
+</script>
 
 {% endblock %}

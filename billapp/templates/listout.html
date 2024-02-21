@@ -79,7 +79,7 @@
                                 DATE
                                 <span class="fa fa-filter ps-1 fs-2"></span>
                             </th>
-                            <th>REFERENCE NUMBER<span class="fa fa-filter ps-1 fs-2"></span></th>
+                            <th>REFERENCE NUMBER<span class="fa fa-filter ps-1 fs-2" onclick="showFilterBox(this)"></span></th>
                             <th>PARTY NAME<span class="fa fa-filter ps-1 fs-2"></span></th>
                             <th>TYPE<span class="fa fa-filter ps-1 fs-2"></span></th>
                             <th>TOTAL<span class="fa fa-filter ps-1 fs-2"></span></th>
@@ -100,28 +100,12 @@
                                     <button class="btn" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                                     <span style="font-size: 20px; background:none;">&#8942;</span>
                                     </button>
-                                    <div class="btn-group mb-1">
-                                        <button style="border: none;background: none;" type="button" class="ropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <span class="fa fa-ellipsis-v text-dark fs-1 ps-2"></span>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <a class="dropdown-item fw-bold tb" href="">
-                                                    <i class="material-icons text-primary" style="font-size: 15px; padding-inline-start: 0.1rem;padding-inline-end:0.7rem ;">edit</i>View / Edit
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a class="dropdown-item fw-bold tb" type="button" onclick="confirm_delete()">
-                                                    <span class="fa fa-trash-alt tr" style="padding-inline-start: 0.1rem;padding-inline-end:0.7rem ;"></span> Delete
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
+                                    
                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <li><a class="dropdown-item" href="{% url 'credit_templates' c.id %}">View</a></li>
-                                        <li><a class="dropdown-item" href="{% url 'edit_creditnote' c.id %}">Edit</a></li>
-                                        <li><a class="dropdown-item" href="#">History</a></li>
-                                        <li><a class="dropdown-item" href="{% url 'delete_creditnote' c.id %}">Delete</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'credit_templates' c.id %}"><span class="fa fa-eye" style="padding-inline-start: 0.1rem;padding-inline-end:0.7rem ;"></span>View</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'edit_creditnote' c.id %}"><span class="fa fa-pen" style="padding-inline-start: 0.1rem;padding-inline-end:0.7rem ;"></span>Edit</a></li>
+                                        <li><a class="dropdown-item" href="#"><span class="fa fa-clock" style="padding-inline-start: 0.1rem;padding-inline-end:0.7rem ;"></span>History</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'delete_creditnote' c.id %}"><span class="fa fa-trash-alt tr" style="padding-inline-start: 0.1rem;padding-inline-end:0.7rem ;"></span>Delete</a></li>
                                     </ul>
                                 </div>
                             </td>
@@ -131,6 +115,24 @@
                 </table>
             </div>
             </div>
+            <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="filterModalLabel">Filter Column</h5>
+                            <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="text" class="form-control" id="filterInput" placeholder="Enter filter value">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Clear</button>
+                            <button type="button" class="btn btn-primary" onclick="applyFilter()">Apply</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
         </div>
     </div>
 </div>
@@ -140,7 +142,57 @@
     <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
 
+    <script>
+        function showFilterBox(icon) {
+            // Create filter box element
+            var filterBox = document.createElement("div");
+            filterBox.className = "filter-box";
+            filterBox.innerHTML = `
+                <label>Equal to</label>
+                <div><input type="text"></div>
+                <div style="padding-top: 10px;" >
+                <button class="btn " onclick="applyFilter(this)" style="background-color: #68020F;color:white;">Apply</button>
+                &nbsp&nbsp&nbsp<button class="btn " onclick="clearFilter()" style="background-color: #68020F;color:white;">Clear</button>
+            </div>
+            `;
+
+            // Apply styling to the filter box
+            filterBox.style.backgroundColor = "white"; // Set background color to white
+            filterBox.style.border = "1px solid #ccc"; // Add border for better visibility
+            filterBox.style.padding = "10px"; // Add padding to space out the content
+
+            // Position filter box relative to cursor
+            var rect = icon.getBoundingClientRect();
+            filterBox.style.position = "absolute";
+            filterBox.style.left = rect.left + "px";
+            filterBox.style.top = (rect.bottom + window.scrollY) + "px";
+
+            // Append filter box to body
+            document.body.appendChild(filterBox);
+        }
+    
+        function applyFilter(button) {
+        var filterValue = button.parentElement.parentElement.querySelector('input').value;
+        var columnIndex = button.parentElement.parentElement.parentElement.parentElement.cellIndex;
+        var tableRows = document.querySelectorAll("#credittable tbody tr");
+        tableRows.forEach(function(row) {
+            var cellValue = row.cells[columnIndex].textContent.trim();
+            if (cellValue.toLowerCase() === filterValue.toLowerCase()) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+    
+        function clearFilter() {
+            
+            var filterInput = document.querySelector(".filter-box input");
+            filterInput.value = "";
+        }
+    </script>
 <script>
+    
     $(document).ready(function(){
         var addCreditNoteBtn = $('#addCreditNoteBtn');
         addCreditNoteBtn.click(function(){
