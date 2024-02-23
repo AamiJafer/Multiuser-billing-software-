@@ -116,6 +116,7 @@
                             <li><a class="dropdown-item" href="#" onclick="shareViaWhatsApp()">WhatsApp</a></li>
                             <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#shareToEmail" style="cursor: pointer;">Email</a></li>
                     </div>
+                    <a href="{% url 'temp' creditnote.id %}">temp</a>
 
                     
                 </div>
@@ -437,6 +438,7 @@
                                                 <td style="width: 100px;text-align: end;">{{creditnote.grandtotal}}</td>
                                             </tr>
                                         </table>
+                                        
                                     </div>
                                 </div>
                             </div>

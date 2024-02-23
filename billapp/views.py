@@ -773,6 +773,7 @@ def sharebill(request,id):
                 # print(emails_list)
                 template_format = request.POST.get('template_format', '1')
                 if template_format == '1':
+                    print("Format1")
                     template_path = 'creditnote_temp_format1.html'
                 elif template_format == '2':
                     template_path = 'creditnote_temp_format2.html'
@@ -788,8 +789,9 @@ def sharebill(request,id):
                 items = Item.objects.filter(company=cmp)
                 unit = Unit.objects.filter(company=cmp)
                 creditnote_curr=CreditNote.objects.get(id=id)
-                creditnote_items=CreditNoteItem.objects.filter(credit_note=creditnote_curr)
+                creditnote_items=CreditNoteItem.objects.filter(company=cmp,credit_note=creditnote_curr)
                 context={'usr':request.user,
+                        'company':cmp,
                         'creditnoteitem_curr':creditnote_items,
                         'credit_note':creditnote_curr,
                         'parties':parties,
@@ -818,3 +820,18 @@ def render_to_pdf(html):
     if not pdf.err:
         return result.getvalue()
     return None
+
+def temp(request,pk):
+  if request.user.is_company:
+    cmp = request.user.company
+  else:
+    cmp = request.user.employee.company 
+  creditnote_curr=CreditNote.objects.get(id=pk)
+  creditnote_items=CreditNoteItem.objects.filter(company=cmp,credit_note=creditnote_curr)
+  print("credit note: ",creditnote_curr)
+  print("Items",creditnote_items)
+  return render(request,'creditnote_temp_format1.html',{'creditnote':creditnote_curr,'creditnoteitem_curr':creditnote_items,'company':cmp})
+
+
+
+  
