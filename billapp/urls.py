@@ -44,5 +44,9 @@ urlpatterns = [
     path('edit_creditnote/<int:pk>',views.edit_creditnote,name="edit_creditnote"),
     path('delete_creditnote/<int:pk>',views.delete_creditnote,name="delete_creditnote"),
     path('updateCreditnote/<int:pk>',views.updateCreditnote,name="updateCreditnote"),
-    path('credit_templates/<int:pk>',views.credit_templates,name="credit_templates")
+    path('credit_templates/<int:pk>',views.credit_templates,name="credit_templates"),
+    
+    path('sharebill/<int:id>',views.sharebill,name="sharebill")
+
+
 ]
