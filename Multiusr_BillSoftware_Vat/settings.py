@@ -132,5 +132,5 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 465
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-EMAIL_HOST_USER = 'altostechnologies6@gmail.com'
-EMAIL_HOST_PASSWORD = 'jkdpqggohjsmhyay'
+EMAIL_HOST_USER = 'aami.jafer20@gmail.com'
+EMAIL_HOST_PASSWORD = 'ljzs lqfc vibi ubwl'

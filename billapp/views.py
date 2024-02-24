@@ -771,15 +771,19 @@ def sharebill(request,id):
                 print("ekamisl",emails_list)
                 email_message = request.POST['email_message']
                 # print(emails_list)
-                template_format = request.POST.get('template_format', '1')
+                template_format = request.POST.get('template_format')
+                print("template_format : ",template_format)
                 if template_format == '1':
                     print("Format1")
                     template_path = 'creditnote_temp_format1.html'
                 elif template_format == '2':
+                    print("Format2")
                     template_path = 'creditnote_temp_format2.html'
                 elif template_format == '3':
+                    print("Format3")
                     template_path = 'creditnote_temp_format3.html'
                 else:
+                    print("else")
                     template_path = 'creditnote_temp_format1.html'
                 if request.user.is_company:
                     cmp = request.user.company
@@ -793,7 +797,7 @@ def sharebill(request,id):
                 context={'usr':request.user,
                         'company':cmp,
                         'creditnoteitem_curr':creditnote_items,
-                        'credit_note':creditnote_curr,
+                        'creditnote':creditnote_curr,
                         'parties':parties,
                         'items':items,'unit':unit
                         }
@@ -830,7 +834,7 @@ def temp(request,pk):
   creditnote_items=CreditNoteItem.objects.filter(company=cmp,credit_note=creditnote_curr)
   print("credit note: ",creditnote_curr)
   print("Items",creditnote_items)
-  return render(request,'creditnote_temp_format1.html',{'creditnote':creditnote_curr,'creditnoteitem_curr':creditnote_items,'company':cmp})
+  return render(request,'creditnote_temp_format2.html',{'creditnote':creditnote_curr,'creditnoteitem_curr':creditnote_items,'company':cmp})
 
 
 
