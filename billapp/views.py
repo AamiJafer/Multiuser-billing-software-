@@ -834,7 +834,7 @@ def temp(request,pk):
   creditnote_items=CreditNoteItem.objects.filter(company=cmp,credit_note=creditnote_curr)
   print("credit note: ",creditnote_curr)
   print("Items",creditnote_items)
-  return render(request,'creditnote_temp_format2.html',{'creditnote':creditnote_curr,'creditnoteitem_curr':creditnote_items,'company':cmp})
+  return render(request,'creditnote_temp_format1.html',{'creditnote':creditnote_curr,'creditnoteitem_curr':creditnote_items,'company':cmp})
 
 
 
