@@ -147,9 +147,17 @@
                             <i class="fas fa-share" style="font-size:175%;"></i><br>Share
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <li><a class="dropdown-item" href="#" style="text-decoration: none;">{% post_to_whatsapp object_or_url "WhatsApp" %}</a></li>
-                            <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#shareToEmail" style="cursor: pointer;">Email</a></li>
-                   </ul> </div>
+                            <li>
+                                <a class="dropdown-item" href="#" style="text-decoration: none;">
+                                    {% post_to_whatsapp object_or_url "WhatsApp" %}
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#shareToEmail" style="cursor: pointer;">
+                                    Email
+                                </a>
+                            </li>
+                        </ul> </div>
                     <a href="{% url 'temp' creditnote.id %}">temp</a>
 
                     
