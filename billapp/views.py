@@ -759,71 +759,29 @@ def credit_templates(request,pk):
            'creditnote':creditnote_curr}
   return render(request,'creditnote_temp.html',context)
 
-def sharebill(request,id):
-    print("sharebill")
-    if request.user:
-        try:
-            if request.method == 'POST':
-                emails_string = request.POST['email_ids']
+@csrf_exempt
+def send_email_with_pdf(request):
+  if request.method == 'POST':
+          recipient_email = request.POST.get('recipient_email')
+          optional_message = request.POST.get('optional_message')
+          format = int(request.POST.get('format'))
 
-                # Split the string by commas and remove any leading or trailing whitespace
-                emails_list = [email.strip() for email in emails_string.split(',')]
-                print("ekamisl",emails_list)
-                email_message = request.POST['email_message']
-                # print(emails_list)
-                template_format = request.POST.get('template_format')
-                print("template_format : ",template_format)
-                if template_format == '1':
-                    print("Format1")
-                    template_path = 'creditnote_temp_format1.html'
-                elif template_format == '2':
-                    print("Format2")
-                    template_path = 'creditnote_temp_format2.html'
-                elif template_format == '3':
-                    print("Format3")
-                    template_path = 'creditnote_temp_format3.html'
-                else:
-                    print("else")
-                    template_path = 'creditnote_temp_format1.html'
-                if request.user.is_company:
-                    cmp = request.user.company
-                else:
-                    cmp = request.user.employee.company 
-                parties = Party.objects.filter(company=cmp)
-                items = Item.objects.filter(company=cmp)
-                unit = Unit.objects.filter(company=cmp)
-                creditnote_curr=CreditNote.objects.get(id=id)
-                creditnote_items=CreditNoteItem.objects.filter(company=cmp,credit_note=creditnote_curr)
-                context={'usr':request.user,
-                        'company':cmp,
-                        'creditnoteitem_curr':creditnote_items,
-                        'creditnote':creditnote_curr,
-                        'parties':parties,
-                        'items':items,'unit':unit
-                        }
-                html = render_to_string(template_path, context)
-                pdf = render_to_pdf(html)
-                if pdf:
-                  subject = f"CreditNote - {cmp.company_name}"
-                  body = f"Hi,\nPlease find the attached Statement for - {creditnote_curr.party.party_name}. \n{email_message}\n\n--\nRegards,\n{cmp.company_name}\n{cmp.address}\n{cmp.city} - {cmp.state}\n{cmp.contact}"
-                  email = EmailMessage(subject, body, from_email=settings.EMAIL_HOST_USER, to=emails_list)
-                  email.attach(f'Creditnote_{creditnote_curr.reference_no}.pdf', pdf, 'application/pdf')
-                  email.send(fail_silently=False)
+          # Generate PDF
+          pdf_data = generate_pdf(format)
 
-                  messages.success(request, 'Statement has been shared via email successfully..!')
-                else:
-                  messages.error(request, 'Failed to generate PDF.')
-        except Exception as e:
-            messages.error(request, str(e))
-    return redirect('credit_templates', id)
-                
-def render_to_pdf(html):
-    # Generate PDF from HTML content
-    result = BytesIO()
-    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
-    if not pdf.err:
-        return result.getvalue()
-    return None
+          # Send email
+          email = EmailMessage(
+              'Subject',
+              'Body',  # This can be left blank since we're attaching a PDF
+              settings.DEFAULT_FROM_EMAIL,
+              [recipient_email]
+          )
+          email.attach(f'creditnote_{format}.pdf', pdf_data, 'application/pdf')
+          email.send()
+
+          return JsonResponse({'success': True})
+  else:
+          return JsonResponse({'success': False})
 
 def temp(request,pk):
   if request.user.is_company:

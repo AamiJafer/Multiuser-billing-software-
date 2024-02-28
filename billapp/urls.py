@@ -46,7 +46,7 @@ urlpatterns = [
     path('updateCreditnote/<int:pk>',views.updateCreditnote,name="updateCreditnote"),
     path('credit_templates/<int:pk>',views.credit_templates,name="credit_templates"),
     
-        path('sharebill/<int:id>',views.sharebill,name="sharebill"),
+        path('send_email_with_pdf',views.send_email_with_pdf,name="send_email_with_pdf"),
         path('temp/<int:pk>',views.temp,name="temp")
 
 
