@@ -17,12 +17,14 @@ from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from django.views import View
 
+import base64
 from django.http import JsonResponse
 from datetime import datetime,date, timedelta
 from xhtml2pdf import pisa
 from django.template.loader import get_template
 from io import BytesIO
 from django.template.loader import render_to_string
+from reportlab.pdfgen import canvas
 
 
 def home(request):
@@ -759,30 +761,30 @@ def credit_templates(request,pk):
            'creditnote':creditnote_curr}
   return render(request,'creditnote_temp.html',context)
 
-@csrf_exempt
 def send_email_with_pdf(request):
-  if request.method == 'POST':
-          recipient_email = request.POST.get('recipient_email')
-          optional_message = request.POST.get('optional_message')
-          format = int(request.POST.get('format'))
+    if request.method == 'POST':
+        recipient_email = request.POST.get('recipient_email')
+        optional_message = request.POST.get('optional_message')
+        format_number = int(request.POST.get('format_number'))
+        pdf_data_base64 = request.POST.get('pdf_data')
 
-          # Generate PDF
-          pdf_data = generate_pdf(format)
+        # Decode base64 data to binary
+        pdf_data_binary = base64.b64decode(pdf_data_base64.split(',')[1])
 
-          # Send email
-          email = EmailMessage(
-              'Subject',
-              'Body',  # This can be left blank since we're attaching a PDF
-              settings.DEFAULT_FROM_EMAIL,
-              [recipient_email]
-          )
-          email.attach(f'creditnote_{format}.pdf', pdf_data, 'application/pdf')
-          email.send()
+        # Send email with attached PDF
+        email = EmailMessage(
+            'Subject',
+            optional_message,
+            settings.DEFAULT_FROM_EMAIL,
+            [recipient_email]
+        )
+        email.attach('CreditNote.pdf', pdf_data_binary, 'application/pdf')
+        email.send()
 
-          return JsonResponse({'success': True})
-  else:
-          return JsonResponse({'success': False})
-
+        return JsonResponse({'success': True})
+    else:
+        return JsonResponse({'success': False})
+    
 def temp(request,pk):
   if request.user.is_company:
     cmp = request.user.company

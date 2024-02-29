@@ -184,7 +184,7 @@
                           </form>
                         </div>
                         <div class="modal-footer d-flex justify-content-center" style="border-top: 1px solid #ffffff;">
-                          <button type="submit" onclick="sendEmail()" class="submitShareEmailBtn btn btn-outline-warning w-50 text-uppercase">SEND MAIL</button>
+                          <button type="submit" id="sendEmailBtn" class="sendEmailBtn btn btn-outline-warning w-50 text-uppercase">SEND MAIL</button>
                         </div>
                       </div>
                     </div>
@@ -518,25 +518,56 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
-    <script>
-        $('#sendEmailBtn').click(function() {
-            var recipientEmail = $('#recipientEmail').val();
-            var optionalMessage = $('#optionalMessage').val();
-            let activeTemplateId;
-            document.querySelectorAll('.btn').forEach(button => {
-                if (button.classList.contains('active')) {
-                    activeTemplateId = button.id.replace('btn', '');
-                }
-            });
-            format=activeTemplateId;
+<script>
+    $(document).ready(function() {
+    // Attach a click event listener to the "SEND MAIL" button
+    $('#sendEmailBtn').on('click', function() {
+        // Get recipient email and optional message
+        var recipientEmail = $('#recipientEmail').val();
+        var optionalMessage = $('#optionalMessage').val();
+
+        // Call the send_email_with_pdf function
+        send_email_with_pdf(recipientEmail, optionalMessage);
+    });
+});
+function send_email_with_pdf(recipientEmail, optionalMessage) {
+    let activeTemplateId;
+    document.querySelectorAll('.btn').forEach(button => {
+        if (button.classList.contains('active')) {
+            activeTemplateId = button.id.replace('btn', '');
+        }
+    });
+
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = document.getElementById('creditnote_detail_target' + activeTemplateId).innerHTML;
+
+    // Save the PDF locally for testing
+    // html2pdf().from(tempDiv).save();
+
+    // Log the content of tempDiv for verification
+    console.log('Content of tempDiv:', tempDiv.innerHTML);
+
+    // Generate the PDF and send it via AJAX
+    html2pdf().from(tempDiv).toPdf().get('pdf').then(function(pdf) {
+        pdf.getDataUrl(function(base64data) {
+            // Log statements here
+            console.log('Data URL:', base64data);
+            console.log('recipientEmail:', recipientEmail);
+            console.log('optionalMessage:', optionalMessage);
+            console.log('activeTemplateId:', activeTemplateId);
+            console.log('csrfmiddlewaretoken:', '{{ csrf_token }}');
+
+            // Now send the PDF data via AJAX to the server
             $.ajax({
                 type: 'POST',
-                url: '{% url "send_email_with_pdf" %}',
+                url: '/send_email_with_pdf/', // Manually specify the URL
                 data: {
+                    pdf_data: base64data,
                     recipient_email: recipientEmail,
                     optional_message: optionalMessage,
-                    format: format,
+                    format_number: activeTemplateId,
                     csrfmiddlewaretoken: '{{ csrf_token }}'
                 },
                 success: function(response) {
@@ -549,8 +580,12 @@
                 }
             });
         });
-    
-    </script>
+    }).catch(function(error) {
+        console.error('Error occurred:', error);
+    });
+
+}
+</script>
 <script>
     function showTemplate(templateNumber) {
         document.querySelectorAll('.template').forEach(template => {
@@ -561,7 +596,7 @@
         });
         document.getElementById('template' + templateNumber).style.display = 'block';
         document.getElementById('btn' + templateNumber).classList.add('active');
-        document.getElementById('template_format').value = templateNumber;
+        // document.getElementById('template_format').value = templateNumber;
         window.scrollTo(0, 0);
     }
     function export_as_pdf() {
@@ -601,7 +636,7 @@
     }
 
 </script>
-<script>
+<!-- <script>
     $(document).ready(function(){
       $('#share_with_email').on('click',function(){
           var emailsInput = document.getElementById('emailIds');
@@ -636,7 +671,7 @@
           }
       })
   });
-</script>
+</script> -->
 
 
 {% endblock %}
