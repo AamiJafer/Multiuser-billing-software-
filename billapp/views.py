@@ -763,27 +763,33 @@ def credit_templates(request,pk):
 
 def send_email_with_pdf(request):
     if request.method == 'POST':
-        recipient_email = request.POST.get('recipient_email')
-        optional_message = request.POST.get('optional_message')
-        format_number = int(request.POST.get('format_number'))
-        pdf_data_base64 = request.POST.get('pdf_data')
+        try:
+            recipient_email = request.POST.get('recipient_email')
+            optional_message = request.POST.get('optional_message')
+            format_number = int(request.POST.get('format_number'))
+            pdf_data_base64 = request.POST.get('pdf_data')
 
-        # Decode base64 data to binary
-        pdf_data_binary = base64.b64decode(pdf_data_base64.split(',')[1])
+            # Decode base64 data to binary
+            pdf_data_binary = base64.b64decode(pdf_data_base64.split(',')[1])
 
-        # Send email with attached PDF
-        email = EmailMessage(
-            'Subject',
-            optional_message,
-            settings.DEFAULT_FROM_EMAIL,
-            [recipient_email]
-        )
-        email.attach('CreditNote.pdf', pdf_data_binary, 'application/pdf')
-        email.send()
+            # Send email with attached PDF
+            email = EmailMessage(
+                'Subject',
+                optional_message,
+                settings.DEFAULT_FROM_EMAIL,
+                from_email=settings.EMAIL_HOST_USER,
+                to=[recipient_email]
+            )
+            email.attach('CreditNote.pdf', pdf_data_binary, 'application/pdf')
+            email.send()
 
-        return JsonResponse({'success': True})
+            return JsonResponse({'success': True})
+        except Exception as e:
+            # Log the error
+            print(f"An error occurred while sending email: {e}")
+            return JsonResponse({'success': False, 'error': str(e)})
     else:
-        return JsonResponse({'success': False})
+        return JsonResponse({'success': False, 'error': 'Invalid request method'})
     
 def temp(request,pk):
   if request.user.is_company:

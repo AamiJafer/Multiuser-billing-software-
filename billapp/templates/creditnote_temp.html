@@ -514,11 +514,10 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
 
 <script>
     $(document).ready(function() {
@@ -550,25 +549,28 @@ function send_email_with_pdf(recipientEmail, optionalMessage) {
     console.log('Content of tempDiv:', tempDiv.innerHTML);
 
     // Generate the PDF and send it via AJAX
-    html2pdf().from(tempDiv).toPdf().get('pdf').then(function(pdf) {
-        pdf.getDataUrl(function(base64data) {
+    html2pdf().from(tempDiv).then(function(pdf) {
+    if (pdf) {
+        pdf.output('datauristring').then(function(dataUri) {
             // Log statements here
-            console.log('Data URL:', base64data);
+            console.log('Data URL:', dataUri);
             console.log('recipientEmail:', recipientEmail);
             console.log('optionalMessage:', optionalMessage);
             console.log('activeTemplateId:', activeTemplateId);
-            console.log('csrfmiddlewaretoken:', '{{ csrf_token }}');
+            // Note: You need to find a way to pass the CSRF token here
+            // console.log('csrfmiddlewaretoken:', '{{ csrf_token }}');
 
             // Now send the PDF data via AJAX to the server
             $.ajax({
                 type: 'POST',
                 url: '/send_email_with_pdf/', // Manually specify the URL
                 data: {
-                    pdf_data: base64data,
+                    pdf_data: dataUri,
                     recipient_email: recipientEmail,
                     optional_message: optionalMessage,
                     format_number: activeTemplateId,
-                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                    // Note: CSRF token should be passed here
+                    // csrfmiddlewaretoken: '{{ csrf_token }}'
                 },
                 success: function(response) {
                     alert('Email sent successfully!');
@@ -580,9 +582,12 @@ function send_email_with_pdf(recipientEmail, optionalMessage) {
                 }
             });
         });
-    }).catch(function(error) {
-        console.error('Error occurred:', error);
-    });
+    } else {
+        console.error('Error: PDF object is undefined or null');
+    }
+}).catch(function(error) {
+    console.error('Error occurred:', error);
+});
 
 }
 </script>
