@@ -582,7 +582,7 @@ def saveCreditnote(request):
       creditnote.party=party
       creditnote.salesinvoice=salesinvoice
       creditnote.save()
-
+      CreditNoteHistory.objects.create(user=usr,company=cmp,credit_note_history=creditnote,action='Created')
     # item_names = request.POST.getlist('item_name')
     # for item_name in item_names:
     #   print(item_name)
@@ -635,6 +635,7 @@ def saveCreditnote(request):
         return redirect('SalesReturn')
       else:
         return redirect('listout_page')
+    
   else:  
     return redirect('SalesReturn')  
   
@@ -700,6 +701,9 @@ def updateCreditnote(request,pk):
       creditnote.party=party
       creditnote.salesinvoice=salesinvoice
       creditnote.save()
+
+    CreditNoteHistory.objects.create(user=usr,company=cmp,credit_note_history=creditnote,action='Updated')
+
 
     item_name = request.POST.getlist('item_name')
     quantity = request.POST.getlist('qty')
@@ -828,18 +832,17 @@ def render_to_pdf(html):
     if not pdf.err:
         return result.getvalue()
     return None
-                
-def temp(request,pk):
-  if request.user.is_company:
-    cmp = request.user.company
-  else:
-    cmp = request.user.employee.company 
-  creditnote_curr=CreditNote.objects.get(id=pk)
-  creditnote_items=CreditNoteItem.objects.filter(company=cmp,credit_note=creditnote_curr)
-  print("credit note: ",creditnote_curr)
-  print("Items",creditnote_items)
-  return render(request,'creditnote_temp_format2.html',{'creditnote':creditnote_curr,'creditnoteitem_curr':creditnote_items,'company':cmp})
 
+def history_page(request,pk):
+  if request.user.is_company:
+      cmp = request.user.company
+  else:
+      cmp = request.user.employee.company
+  creditnote=CreditNote.objects.get(id=pk)
+  credit_hist=CreditNoteHistory.objects.filter(credit_note_history=pk) 
+  context={'c_usr':request.user,'c_comp':cmp,'creditnote':creditnote,'credit_hist':credit_hist}
+  return render(request,'historyPage.html',context)
+   
 
 
   

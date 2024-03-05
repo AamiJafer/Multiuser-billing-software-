@@ -125,7 +125,7 @@ class CreditNote(models.Model):
     vat = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     adjustment = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     grandtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-
+    creditnote_date = models.DateTimeField(auto_now_add=True,null=True)
 
 class CreditNoteItem(models.Model):
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,null=True,blank=True)
@@ -139,4 +139,15 @@ class CreditNoteItem(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    
+class CreditNoteHistory(models.Model):
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,null=True,blank=True)
+    company = models.ForeignKey(Company,on_delete= models.CASCADE,null=True,blank=True)
+    credit_note_history = models.ForeignKey(CreditNote, related_name='credit_note', on_delete=models.CASCADE)    
+    CHOICES = [
+        ('Created', 'Created'),
+        ('Updated', 'Updated'),
+    ]
+    action = models.CharField(max_length=20, choices=CHOICES)
+    hist_date = models.DateTimeField(auto_now_add=True)
     

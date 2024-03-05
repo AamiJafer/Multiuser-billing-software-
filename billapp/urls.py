@@ -47,7 +47,6 @@ urlpatterns = [
     path('credit_templates/<int:pk>',views.credit_templates,name="credit_templates"),
     
         path('sharebill/<int:id>',views.sharebill,name="sharebill"),
-        path('temp/<int:pk>',views.temp,name="temp")
-
+        path('history_page/<int:pk>',views.history_page,name="history_page")
 
 ]

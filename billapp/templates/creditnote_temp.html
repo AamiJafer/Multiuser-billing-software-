@@ -148,7 +148,7 @@
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <li>
-                                <a class="dropdown-item" href="#" style="text-decoration: none;">
+                                <a class="dropdown-item" href="#" style="text-decoration: none; color: #555;">
                                     {% post_to_whatsapp object_or_url "WhatsApp" %}
                                 </a>
                             </li>
@@ -157,14 +157,13 @@
                                     Email
                                 </a>
                             </li>
-                        </ul> </div>
-                    <a href="{% url 'temp' creditnote.id %}">temp</a>
-
+                        </ul> 
+                    </div>
                     
                 </div>
                 <div class="modal fade" id="shareToEmail" tabindex="-1" aria-labelledby="shareToEmailLabel" aria-hidden="true">
                     <div class="modal-dialog">
-                      <div class="modal-content" style="background: rgb(32, 35, 37);">
+                      <div class="modal-content" style="background: #FFD6D7;">
                         <div class="modal-header" style="border-bottom: 1px solid #ffffff;">
                           <h5 class="modal-title text-white" id="shareToEmailLabel">Share Statement Via Email</h5>
                           <button type="button" class="text-white btn" data-bs-dismiss="modal" aria-label=""><i class="fa fa-close text-white m-0"></i></button>
@@ -174,11 +173,11 @@
                                 {% csrf_token %}
                             <div class="form-group">
                                 <label for="emailIds">Email IDs</label>
-                                <textarea class="form-control text-dark" name="email_ids" id="recipientEmail" rows="3" style="height: 100px;" placeholder="Multiple emails can be added by separating with a comma(,)." required></textarea>
+                                <textarea class="form-control text-dark" name="email_ids" id="recipientEmail" rows="3" style="height: 100px;border-color: #eee;" placeholder="Multiple emails can be added by separating with a comma(,)." required></textarea>
                             </div>
                             <div class="form-group mt-2">
                                 <label for="item_unitname">Message(optional)</label>
-                                <textarea name="email_message" id="optionalMessage" class="form-control text-dark" cols="" rows="4" style="height: 100px;" placeholder="This message will be sent along with Bill details."></textarea>
+                                <textarea name="email_message" id="optionalMessage" class="form-control text-dark" cols="" rows="4" style="height: 100px;border-color: #eee;" placeholder="This message will be sent along with Bill details."></textarea>
                             </div>
                             <input type="text" id="template_format" name="template_format" hidden>
                           
@@ -292,7 +291,7 @@
                     <div id="template2" class="template"  style="display: none;">    
                         <div class="invoice-box2" id="invoice-box2">
                             <div class="heading2">
-                                <h1>CREDIT NOTE</h1><br>
+                                <h1 style="color: #68020F;">CREDIT NOTE</h1><br>
                             </div>
                             <div class="credit-addr">
                                 <div class="row" style="padding-top: 30px;">
@@ -318,12 +317,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="underline" id="underline"></div>
-                            <div class="company-addr">
+                            <div class="underline" id="underline" style="border-bottom: 1px solid rgb(152, 147, 147);padding-bottom: 10px;"></div>
+                            <center><div class="company-addr">
                                 <h3>{{company.company_name}}</h3>
                                     {{company.city}}, {{company.state}}
-                            </div>
-                            <div class="underline"></div>
+                            </div></center>
+                            <div class="underline" style="border-bottom: 1px solid rgb(152, 147, 147);padding-bottom: 10px;"></div>
                             <div class="credit-content2">      
                                 <div class="table-responsive" style="padding-top: 30px;">
                                     <table id="itemtable" class="table table-bordered  tb table-responsive w-100">

@@ -104,7 +104,7 @@
                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                         <li><a class="dropdown-item" href="{% url 'credit_templates' c.id %}"><span class="fa fa-eye" style="padding-inline-start: 0.1rem;padding-inline-end:0.7rem ;"></span>View</a></li>
                                         <li><a class="dropdown-item" href="{% url 'edit_creditnote' c.id %}"><span class="fa fa-pen" style="padding-inline-start: 0.1rem;padding-inline-end:0.7rem ;"></span>Edit</a></li>
-                                        <li><a class="dropdown-item" href="#"><span class="fa fa-clock" style="padding-inline-start: 0.1rem;padding-inline-end:0.7rem ;"></span>History</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'history_page' c.id %}"><span class="fa fa-clock" style="padding-inline-start: 0.1rem;padding-inline-end:0.7rem ;"></span>History</a></li>
                                         <li><a class="dropdown-item" href="{% url 'delete_creditnote' c.id %}"><span class="fa fa-trash-alt tr" style="padding-inline-start: 0.1rem;padding-inline-end:0.7rem ;"></span>Delete</a></li>
                                     </ul>
                                 </div>

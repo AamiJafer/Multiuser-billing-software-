@@ -26,14 +26,14 @@
                                             </tr>
                                         </table>
                                    
-                                <div class="underline" style="border-bottom: 1px solid rgb(124, 122, 122);width: 100%;"></div>
+
                                 <div class="company-addr" style="padding: 10px; text-align: center; border: none;">
-                                    <h3 style="border: none;margin-bottom: -1px;">{{company.company_name}}</h3>
-                                    <span style="color: black;border: none;margin-top: 0px;">{{company.city}}, {{company.state}}</span>
-                                </div>
-                                <div class="underline" style="border-bottom: 1px solid rgb(152, 147, 147); width: 100%;"></div>
-                                <div class="credit-content">      
-                                    <div class="table-responsive" style="padding-top: 30px;">
+                                    <h3 style="border: none;margin-bottom: -1px;border-top: 1px solid rgb(124, 122, 122);">{{company.company_name}}</h3>
+                                    <p style="border-bottom: 1px solid rgb(124, 122, 122); margin-top: 5px;">{{company.city}}, {{company.state}}</p>
+                                    
+
+                                </div>     
+                                    
                                         <table id="itemtable" style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
                                             <thead>
                                                 <th style="background-color: #68020F; color: white; border: 1px solid #ddd; padding: 8px;">PRODUCT</th>
@@ -58,39 +58,34 @@
                                                 {% endfor %}
                                             </tbody>
                                         </table>
-                                    </div>
-                                    <div class="row" style="padding-top: 30px;">
-                                        <div class="col" style="flex: 1; display: flex; justify-content: flex-end;">
-                                            <table style="width: 250px; height: 180px;">
-                                                <tr>
-                                                    <td style="width: 150px; border: 1px solid #fff; padding: 8px;">Subtotal</td>
-                                                    <td style="width: 50px; border: 1px solid #fff; padding: 8px;">:</td>
-                                                    <td style="width: 50px; text-align: end; border: 1px solid #fff; padding: 8px;">{{creditnote.subtotal}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="border: 1px solid #fff; padding: 8px;">VAT</td>
-                                                    <td style="border: 1px solid #fff; padding: 8px;">:</td>
-                                                    <td style="width: 100px; text-align: end; border: 1px solid #fff; padding: 8px;">{{creditnote.vat}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="border: 1px solid #fff; padding: 8px;">Tax Amount</td>
-                                                    <td style="border: 1px solid #fff; padding: 8px;">:</td>
-                                                    <td style="width: 100px; text-align: end; border: 1px solid #fff; padding: 8px;">{{creditnote.vat}}</td>
-                                                </tr>
-                                                <tr class="underline" style="border-bottom: 1px solid rgb(152, 147, 147);">
-                                                    <td style="border: 1px solid #fff; padding: 8px;">Adjustment</td>
-                                                    <td style="border: 1px solid #fff; padding: 8px;">:</td>
-                                                    <td style="width: 100px; text-align: end; border: 1px solid #fff; padding: 8px;">{{creditnote.adjustment}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="border: 1px solid #fff; padding: 8px;">Grand Total</td>
-                                                    <td style="border: 1px solid #fff; padding: 8px;">:</td>
-                                                    <td style="width: 100px; text-align: end; border: 1px solid #fff; padding: 8px;">{{creditnote.grandtotal}}</td>
-                                                </tr>
-                                            </table>
+                                 
+                                        <div style="padding-top: 30px;margin-top: 20px;">
+                                            <div style="display: flex;">
+                                                <div style="margin-left: auto; text-align: right;">
+                                                    <table  style="border: none; text-align: right;">
+                                                        <tr>
+                                                            <td style="padding: 8px 12px;">Subtotal :<span>{{ creditnote.subtotal }}</span></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="padding: 8px 12px;">VAT :<span>{{ creditnote.vat }}</span></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="padding: 8px 12px;">Tax Amount : <span>{{ creditnote.vat }}</span></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="padding: 8px 12px;">
+                                                                Adjustment : <span>{{ creditnote.adjustment }}</span>
+                                                                
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="padding: 8px 12px;border-top: 1px solid grey;">Grand Total :<span>{{ creditnote.grandtotal }}</span></td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
+                               
                                              
         </div>
     </div>              
