@@ -148,8 +148,8 @@
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <li>
-                                <a class="dropdown-item" href="#" style="text-decoration: none; color: #555;">
-                                    {% post_to_whatsapp object_or_url "WhatsApp" %}
+                                <a class="dropdown-item" href="whatsapp://send?text={{ request.build_absolute_uri|urlencode }}" style="cursor: pointer;">
+                                    WhatsApp
                                 </a>
                             </li>
                             <li>

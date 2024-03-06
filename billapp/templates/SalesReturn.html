@@ -731,7 +731,9 @@
                     add1:$("#addField1").val(),
                     add2:$("#addField2").val(),
                     add3:$("#addField3").val(),
-                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                beforeSend: function(xhr, settings) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
                 },
                 success: function(response){
                     document.getElementById("unitmodalform").reset();

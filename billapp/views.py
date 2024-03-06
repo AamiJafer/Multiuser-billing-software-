@@ -385,17 +385,17 @@ def saveParty(request):
           usr = CustomUser.objects.get(username=request.user)
           party_name = request.POST['party_name']
           gst_no = request.POST['gst_no']
-          mob = request.POST['party_num']
+          mob = request.POST['mob']
           gsttype = request.POST['gsttype']
-          state = request.POST['supp_state']
+          state = request.POST['state']
           email = request.POST['email']
-          addr = request.POST['party_addr']
-          opbal = request.POST['creditamt']
-          cr_limit = request.POST['crLimit']
-          date = request.POST['credit_date']
-          add1 = request.POST['addField1']
-          add2 = request.POST['addField2']
-          add3 = request.POST['addField3']
+          addr = request.POST['addr']
+          opbal = request.POST['opbal']
+          cr_limit = request.POST['cr_limit']
+          date = request.POST['date']
+          add1 = request.POST['add1']
+          add2 = request.POST['add2']
+          add3 = request.POST['add3']
           
           user = request.user  
           party = Party(
