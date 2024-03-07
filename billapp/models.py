@@ -40,12 +40,35 @@ class Party(models.Model):
     email = models.EmailField(max_length=100,null=True,blank=True)
     openingbalance = models.CharField(max_length=100,default='0',null=True,blank=True)
     payment = models.CharField(max_length=100,null=True,blank=True)
-    creditlimit = models.CharField(max_length=100,default='0',null=True,blank=True)
+    opening_stock = models.IntegerField(default=0)
+    at_price = models.IntegerField(default=0)
     current_date = models.DateField(max_length=255,null=True,blank=True)
     End_date = models.CharField(max_length=255,null=True,blank=True)
     additionalfield1 = models.CharField(max_length=100,null=True,blank=True)
     additionalfield2 = models.CharField(max_length=100,null=True,blank=True)
     additionalfield3 = models.CharField(max_length=100,null=True,blank=True)
+
+    def _str_(self):
+        return self.party_name
+
+class Transactions_party(models.Model):
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,null=True,blank=True)
+    company = models.ForeignKey(Company,on_delete= models.CASCADE,null=True,blank=True)
+    party = models.OneToOneField(Party,on_delete=models.CASCADE,null=True,blank=True)
+    trans_type = models.CharField(max_length=255)
+    trans_number = models.CharField(max_length=255)
+    trans_date = models.DateTimeField()
+    total=models.CharField(max_length=255)
+    balance=models.CharField(max_length=255)   
+     
+class PartyTransactionHistory(models.Model):
+    Transactions_party = models.ForeignKey(Transactions_party,on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,null=True,blank=True)
+    company = models.ForeignKey(Company,on_delete= models.CASCADE,null=True,blank=True)
+    party = models.OneToOneField(Party,on_delete=models.CASCADE,null=True,blank=True)
+    action = models.CharField(max_length=255)
+    transactiondate = models.DateField(auto_now=True)
+
 
 class Item(models.Model):
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,null=True,blank=True)
@@ -101,7 +124,8 @@ class SalesInvoice(models.Model):
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,null=True,blank=True)
     company = models.ForeignKey(Company,on_delete= models.CASCADE,null=True,blank=True)
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE,null=True,blank=True)
-    party = models.OneToOneField(Party,on_delete=models.CASCADE,null=True,blank=True)
+    party = models.OneToOneField(Party,on_delete=models.CASCADE,null=True,blank=True,unique=True)
+    item=models.ForeignKey(Item, on_delete=models.CASCADE,null=True,blank=True)
     party_name = models.CharField(max_length=100,null=True,blank=True)
     contact = models.CharField(max_length=255,null=True,blank=True)
     address = models.CharField(max_length=255,null=True,blank=True)
@@ -112,6 +136,7 @@ class SalesInvoice(models.Model):
     vat = models.CharField(max_length=100,default=0, null=True)
     adjustment = models.CharField(max_length=100,default=0)
     grandtotal = models.FloatField(default=0, null=True)
+    total_taxamount = models.CharField(max_length=100,default=0)
 
 class CreditNote(models.Model):
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,null=True,blank=True)

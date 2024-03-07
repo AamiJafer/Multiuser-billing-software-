@@ -26,7 +26,7 @@ from io import BytesIO
 from django.template.loader import render_to_string
 from reportlab.pdfgen import canvas
 from django.core.files.base import ContentFile
-
+from django.db import IntegrityError
 
 def home(request):
   return render(request, 'home.html')
@@ -391,32 +391,49 @@ def saveParty(request):
           email = request.POST['email']
           addr = request.POST['addr']
           opbal = request.POST['opbal']
-          cr_limit = request.POST['cr_limit']
+          payment = request.POST.get('paymentType', '')
           date = request.POST['date']
           add1 = request.POST['add1']
           add2 = request.POST['add2']
           add3 = request.POST['add3']
+
+          try:
+            # Check if a party with the same trn_no already exists
+            if Party.objects.filter(trn_no=gst_no, company=cmp).exists():
+                error_message = 'An error occurred while processing your request. TRN number already exists. Please enter a unique TRN number.'
+            elif Party.objects.filter(email=email, company=cmp).exists():
+                error_message = 'An error occurred while processing your request. Email already exists. Please enter a unique email address.'
+            else:
           
-          user = request.user  
-          party = Party(
-              user=user,
-              company=cmp,
-              party_name=party_name,
-              trn_no=gst_no,
-              contact=mob,
-              trn_type=gsttype,
-              state=state,
-              address=addr,
-              email=email,
-              openingbalance=opbal,
-              creditlimit=cr_limit,
-              current_date=date,
-              additionalfield1=add1,
-              additionalfield2=add2,
-              additionalfield3=add3
-          )
-          party.save()
-          print('Party created succefully ')
+              user = request.user  
+              party = Party(
+                  user=user,
+                  company=cmp,
+                  party_name=party_name,
+                  trn_no=gst_no,
+                  contact=mob,
+                  trn_type=gsttype,
+                  state=state,
+                  address=addr,
+                  email=email,
+                  openingbalance=opbal,
+                  
+                  current_date=date,
+                  additionalfield1=add1,
+                  additionalfield2=add2,
+                  additionalfield3=add3
+              )
+              party.save()
+              print('Party created succefully ')
+              trans = Transactions_party(user=request.user,company=cmp, trans_type='Opening Balance', trans_number=gst_no,
+                                           trans_date=date, total=opbal, balance=opbal, party=party)
+              
+              tr_history = PartyTransactionHistory(party=party, Transactions_party=trans, action="CREATED")
+              tr_history.save()
+          except IntegrityError:
+            # Specific error message for duplicate TRN number
+            error_message = 'An error occurred while processing your request. Please try again.'
+          
           return HttpResponse({"message": "success"})
       
 def party_dropdown(request):
@@ -843,6 +860,7 @@ def history_page(request,pk):
   context={'c_usr':request.user,'c_comp':cmp,'creditnote':creditnote,'credit_hist':credit_hist}
   return render(request,'historyPage.html',context)
    
-
+def new_pg(request):
+   return render(request,'new.html')
 
   
