@@ -91,7 +91,13 @@
                         <tr>
                             <td>{{forloop.counter}}</td>
                             <td>{{c.returndate|date:'Y-m-d'}}</td>
-                            <td>{{c.reference_no}}</td>
+                            <td>{% if c.references.all %}
+                                {% for reference in c.references.all %}
+                                    {{ reference.reference_no }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                No reference number available
+                            {% endif %}</td>
                             <td>{{c.party.party_name}}</td>
                             <td>{{c.party.payment}}</td>
                             <td>{{c.grandtotal}}</td>

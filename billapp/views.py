@@ -368,8 +368,8 @@ def SalesReturn(request):
     parties = Party.objects.filter(company=cmp)
     items = Item.objects.filter(company=cmp)
     unit = Unit.objects.filter(company=cmp)
-    max_reference_number = CreditNote.objects.filter(company=cmp).aggregate(Max('reference_no'))['reference_no__max']
-    reference_number = max_reference_number + 1 if max_reference_number is not None else 1
+    max_reference_number = CreditNoteReference.objects.filter(company=cmp).aggregate(Max('reference_no'))['reference_no__max']
+    reference_number = int(max_reference_number) + 1 if max_reference_number is not None else 1
     print("Reference number:", reference_number)
     context = {'usr':request.user, 'parties':parties, 'items':items,'unit':unit,'cmp':cmp,'reference_number': reference_number}
     return render(request,'SalesReturn.html',context)
@@ -434,7 +434,7 @@ def saveParty(request):
             # Specific error message for duplicate TRN number
             error_message = 'An error occurred while processing your request. Please try again.'
           
-          return HttpResponse({"message": "success"})
+          return JsonResponse( {'error_message': error_message})
       
 def party_dropdown(request):
   if request.user.is_company:
@@ -589,17 +589,23 @@ def saveCreditnote(request):
     grandtotal=request.POST['grandTotal']
     party_status = request.POST.get('partystatus')
     print("Partystatus: ",party_status)
-    creditnote = CreditNote.objects.create(user=usr, company=cmp,reference_no=reference_no,partystatus=party_status,returndate=return_date, subtotal=subtotal, vat=vat, adjustment=adjustment, grandtotal=grandtotal)
+    creditnote = CreditNote.objects.create(user=usr, company=cmp,partystatus=party_status,returndate=return_date, subtotal=subtotal, vat=vat, adjustment=adjustment, grandtotal=grandtotal)
+    CreditNoteReference.objects.create(user=usr, company=cmp, credit_note=creditnote, reference_no=reference_no)
     if party_status=='partyon':
       party_details = request.POST.get('party_details')
       party_id = party_details.split()[0]
       party = Party.objects.get(pk=party_id)
-      salesinvoice=SalesInvoice.objects.get(company=cmp,party=party)
+      
       print(party.party_name)
       creditnote.party=party
-      creditnote.salesinvoice=salesinvoice
+      try:
+        salesinvoice = SalesInvoice.objects.get(company=cmp, party=party)
+        creditnote.salesinvoice = salesinvoice
+      except SalesInvoice.DoesNotExist:
+        # Handle the case where SalesInvoice does not exist
+        pass
       creditnote.save()
-      CreditNoteHistory.objects.create(user=usr,company=cmp,credit_note_history=creditnote,action='Created')
+    CreditNoteHistory.objects.create(user=usr,company=cmp,credit_note_history=creditnote,action='Created')
     # item_names = request.POST.getlist('item_name')
     # for item_name in item_names:
     #   print(item_name)
@@ -778,9 +784,10 @@ def credit_templates(request,pk):
   else:
       cmp = request.user.employee.company 
   creditnote_curr=CreditNote.objects.get(id=pk)
+  reference=CreditNoteReference.objects.get(credit_note=creditnote_curr)
   creditnote_items=CreditNoteItem.objects.filter(credit_note=creditnote_curr)
   context = {'usr':request.user,'company':cmp,'creditnoteitem_curr':creditnote_items,
-           'creditnote':creditnote_curr}
+           'creditnote':creditnote_curr,'reference':reference}
   return render(request,'creditnote_temp.html',context)
 
 def sharebill(request,id):
@@ -818,12 +825,14 @@ def sharebill(request,id):
                 items = Item.objects.filter(company=cmp)
                 unit = Unit.objects.filter(company=cmp)
                 creditnote_curr=CreditNote.objects.get(id=id)
+                reference=CreditNoteReference.objects.get(credit_note=creditnote_curr)
                 creditnote_items=CreditNoteItem.objects.filter(company=cmp,credit_note=creditnote_curr)
                 context={'usr':request.user,
                         'company':cmp,
                         'creditnoteitem_curr':creditnote_items,
                         'creditnote':creditnote_curr,
                         'parties':parties,
+                        'reference':reference,
                         'items':items,'unit':unit
                         }
                 html = render_to_string(template_path, context)
@@ -856,8 +865,9 @@ def history_page(request,pk):
   else:
       cmp = request.user.employee.company
   creditnote=CreditNote.objects.get(id=pk)
+  reference=CreditNoteReference.objects.get(credit_note=creditnote)
   credit_hist=CreditNoteHistory.objects.filter(credit_note_history=pk) 
-  context={'c_usr':request.user,'c_comp':cmp,'creditnote':creditnote,'credit_hist':credit_hist}
+  context={'c_usr':request.user,'c_comp':cmp,'creditnote':creditnote,'credit_hist':credit_hist,'reference':reference}
   return render(request,'historyPage.html',context)
    
 def new_pg(request):

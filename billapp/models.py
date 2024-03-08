@@ -144,13 +144,19 @@ class CreditNote(models.Model):
     partystatus=models.CharField(max_length=100,null=True,blank=True)
     party=models.ForeignKey(Party,on_delete= models.CASCADE,null=True,blank=True)
     salesinvoice=models.ForeignKey(SalesInvoice,on_delete= models.CASCADE,null=True,blank=True)
-    reference_no=models.IntegerField(null=True,default="0")
+    # reference_no=models.IntegerField(null=True,default="0")
     returndate=models.DateField()
     subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     vat = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     adjustment = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     grandtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     creditnote_date = models.DateTimeField(auto_now_add=True,null=True)
+
+class CreditNoteReference(models.Model):
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,null=True,blank=True)
+    company = models.ForeignKey(Company,on_delete= models.CASCADE,null=True,blank=True)
+    credit_note = models.ForeignKey(CreditNote, related_name='references', on_delete=models.CASCADE)
+    reference_no = models.CharField(max_length=100, blank=True,null=True)
 
 class CreditNoteItem(models.Model):
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,null=True,blank=True)
