@@ -391,7 +391,7 @@ def saveParty(request):
           email = request.POST['email']
           addr = request.POST['addr']
           opbal = request.POST['opbal']
-          payment = request.POST.get('paymentType', '')
+          payment = request.POST.get('paymentType','')
           date = request.POST['date']
           add1 = request.POST['add1']
           add2 = request.POST['add2']
@@ -417,7 +417,7 @@ def saveParty(request):
                   address=addr,
                   email=email,
                   openingbalance=opbal,
-                  
+                  payment=payment,
                   current_date=date,
                   additionalfield1=add1,
                   additionalfield2=add2,
@@ -680,6 +680,7 @@ def edit_creditnote(request,pk):
   items = Item.objects.filter(company=cmp)
   unit = Unit.objects.filter(company=cmp)
   creditnote_curr=CreditNote.objects.get(id=pk)
+  reference=CreditNoteReference.objects.get(credit_note=creditnote_curr)
   creditnote_items=CreditNoteItem.objects.filter(credit_note=creditnote_curr)
   for item in creditnote_items:
     print(f"Item ID: {item.id}")
@@ -688,6 +689,7 @@ def edit_creditnote(request,pk):
            'creditnoteitem_curr':creditnote_items,
            'credit_note':creditnote_curr,
            'parties':parties,
+           'reference':reference,
            'items':items,'unit':unit
           }
   return render(request,'edit_creditnote.html',context)
@@ -705,10 +707,11 @@ def updateCreditnote(request,pk):
       cmp = request.user.employee.company
     usr = CustomUser.objects.get(username=request.user)
     creditnote=CreditNote.objects.get(id=pk)
+    reference=CreditNoteReference.objects.get(credit_note=creditnote)
     creditnote.user=request.user
     creditnote.company=cmp
     creditnote.returndate=request.POST['returndate']
-    creditnote.reference_no=request.POST['refnum']
+    reference.reference_no=request.POST['refnum']
     creditnote.subtotal=request.POST['subtotal']
     creditnote.vat=request.POST['disvatper']
     creditnote.adjustment=request.POST['adjustment']
@@ -719,10 +722,15 @@ def updateCreditnote(request,pk):
       party_details = request.POST.get('party_details')
       party_id = party_details.split()[0]
       party = Party.objects.get(pk=party_id)
-      salesinvoice=SalesInvoice.objects.get(company=cmp,party=party)
+      
       print(party.party_name)
       creditnote.party=party
-      creditnote.salesinvoice=salesinvoice
+      try:
+        salesinvoice = SalesInvoice.objects.get(company=cmp, party=party)
+        creditnote.salesinvoice = salesinvoice
+      except SalesInvoice.DoesNotExist:
+        # Handle the case where SalesInvoice does not exist
+        pass
       creditnote.save()
 
     CreditNoteHistory.objects.create(user=usr,company=cmp,credit_note_history=creditnote,action='Updated')
@@ -869,8 +877,5 @@ def history_page(request,pk):
   credit_hist=CreditNoteHistory.objects.filter(credit_note_history=pk) 
   context={'c_usr':request.user,'c_comp':cmp,'creditnote':creditnote,'credit_hist':credit_hist,'reference':reference}
   return render(request,'historyPage.html',context)
-   
-def new_pg(request):
-   return render(request,'new.html')
-
+ 
   

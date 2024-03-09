@@ -152,7 +152,7 @@
         <div class="p-3 mb-5" style="border: 2px solid #68020F; border-radius: 2.5vh; background-color: #FFD6D7;">
             <div class="card-body">
                 <h1 class="modal-title fs-5 p-1" id="exampleModalLabel"
-                                    style="color: #68020F; font-weight: 900;">ADD CREDITNOTE</h1><a href="{% url 'new_pg' %}">Pg</a>
+                                    style="color: #68020F; font-weight: 900;">ADD CREDITNOTE</h1>
                 <form class="row g-3 " method="post" action="{% url 'saveCreditnote' %}" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="form-group row g-3">
@@ -209,7 +209,7 @@
                             <input type="text" class="form-control" id="refnum" name="refnum" value="{{reference_number}}">
                         </div>
                     </div>
-                    <div class="row mt-3 partyon" hidden>
+                    <div class="row mt-3 partyon" id="salesinvoiceid" hidden>
                         <div class="col-md-4">
                             <label for="validationDefaultUsername" class="form-label">Invoice Number</label>
                             <input type="text" class="form-control" id="invoiceno" name="invoiceno">
@@ -229,8 +229,8 @@
                             <label for="validationDefaultUsername" class="form-label">Place of Supply</label>
                             <input type="text" class="form-control" id="placesupply" name="placesupply">
                         </div> -->
-                        <div class="col-md-4 partyon" hidden>
-                            <label for="validationDefaultUsername" class="form-label">Payment method</label>
+                        <div class="col-md-4 partyon" id="salesinvoiceid" hidden>
+                            <label for="validationDefaultUsername" class="form-label">Payment</label>
                             <input type="text" class="form-control" id="paymethod" name="paymethod">
                         </div>
                     </div>
@@ -460,11 +460,11 @@
                                                     </div><br>
                                                     <div class="row">
                                                         <div class="col-md-4 mt-2">
-                                                            <input type="radio" name="paymentType" value="toReceive" id="toReceiveRadio" checked>
+                                                            <input type="radio" name="paymentType" value="To Receive" id="toReceiveRadio">
                                                                 To Receive
                                                         </div>
                                                         <div class="col-md-4 mt-2">
-                                                            <input type="radio" name="paymentType" value="toPay" id="toPayRadio" checked>
+                                                            <input type="radio" name="paymentType" value="To Pay" id="toPayRadio">
                                                                 To Pay
                                                         </div>
                                                     </div><br>
@@ -717,8 +717,6 @@
     </div>
 </div>
 
-
-
 <script>
     
     $(document).ready(function () {
@@ -740,7 +738,7 @@
                     email:$("#email").val(),
                     addr:$("#party_addr").val(),
                     opbal:$("#creditamt").val(),
-                    cr_limit:$("#crLimit").val(),
+                    paymentType: $('input[name="paymentType"]:checked').val(),
                     date:$("#credit_date").val(),
                     add1:$("#addField1").val(),
                     add2:$("#addField2").val(),
@@ -782,24 +780,60 @@
             });
         }
 
+        
         $('#party_details').change(function() {
-            $.ajax({
-                url: "{% url 'get_partydetails' %}",
-                data: { 
-                    id:$('#party_details').val(),
-                    csrfmiddlewaretoken: '{{ csrf_token }}',
-                },
-                type: 'POST',
-                success: function(data){
-                    $('#balance').text("Available Balance: " + data.balance).show();
-                    $('#party_phone').val(""+data.phone);
-                    $('#invoiceno').val(""+data.invoiceno);
-                    $('#invoicedate').val(""+data.invoicedate);
-                    // $('#placesupply').val(""+data.placeofsupply);
-                    $('#paymethod').val(""+data.payment);
+        $.ajax({
+            url: "{% url 'get_partydetails' %}",
+            data: { 
+                id: $('#party_details').val(),
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
+            type: 'POST',
+            success: function(data) {
+                $('#balance').text("Available Balance: " + data.balance).show();
+                $('#party_phone').val(data.phone);
+                
+                // Check if invoice number and date are available
+                if (data.invoiceno && data.invoicedate) {
+                    // Show salesinvoiceid div if valid data is available
+                    $('#salesinvoiceid').show();
+                    $('#invoiceno').val(data.invoiceno);
+                    $('#invoicedate').val(data.invoicedate);
+                   
+                } else {
+                    // Hide salesinvoiceid div if no valid data is available
+                    $('#salesinvoiceid').hide();
+                    $('#invoiceno').val('');
+                    $('#invoicedate').val('');
+                   
+
                 }
-            });
+
+                // $('#placesupply').val(data.placeofsupply);
+                $('#paymethod').val(data.payment);
+            }
         });
+    });
+
+
+        // $('#party_details').change(function() {
+        //     $.ajax({
+        //         url: "{% url 'get_partydetails' %}",
+        //         data: { 
+        //             id:$('#party_details').val(),
+        //             csrfmiddlewaretoken: '{{ csrf_token }}',
+        //         },
+        //         type: 'POST',
+        //         success: function(data){
+        //             $('#balance').text("Available Balance: " + data.balance).show();
+        //             $('#party_phone').val(""+data.phone);
+        //             $('#invoiceno').val(""+data.invoiceno);
+        //             $('#invoicedate').val(""+data.invoicedate);
+        //             // $('#placesupply').val(""+data.placeofsupply);
+        //             $('#paymethod').val(""+data.payment);
+        //         }
+        //     });
+        // });
 
         function validateGSTIN(inputElement) {
             const gstin = inputElement.value;
